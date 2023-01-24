@@ -1,0 +1,102 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  creationTimestamp: '2023-01-24T15:08:13Z'
+  generation: 18
+  managedFields:
+    - apiVersion: tekton.dev/v1beta1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          .: {}
+          'f:finally': {}
+          'f:params': {}
+          'f:resources': {}
+          'f:tasks': {}
+          'f:workspaces': {}
+      manager: Mozilla
+      operation: Update
+      time: '2023-01-24T15:08:13Z'
+  name: build-and-deploy
+  namespace: quarkus-app-dev
+  resourceVersion: '495480'
+  uid: d0416c75-1303-41b0-97ce-d276897708a3
+spec:
+  tasks:
+    - name: github-fetch-code
+      params:
+        - name: url
+          value: 'https://github.com/gwsantos/quarkus-app.git'
+        - name: revision
+          value: dev
+        - name: submodules
+          value: 'true'
+        - name: depth
+          value: '1'
+        - name: sslVerify
+          value: 'true'
+        - name: crtFileName
+          value: ca-bundle.crt
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'true'
+        - name: gitInitImage
+          value: >-
+            registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:2b4c4958cabdceffefef68940608f2c7e6774c0b94ba3eb49fa1b9ff0b544e8c
+        - name: userHome
+          value: /tekton/home
+      taskRef:
+        kind: ClusterTask
+        name: git-clone-1-9-0
+      workspaces:
+        - name: output
+          workspace: pipeline-ws-dev
+    - name: maven-build
+      params:
+        - name: MAVEN_IMAGE
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/openshift/java:latest
+        - name: GOALS
+          value:
+            - package
+        - name: PROXY_PROTOCOL
+          value: http
+        - name: CONTEXT_DIR
+          value: .
+      runAfter:
+        - github-fetch-code
+      taskRef:
+        kind: ClusterTask
+        name: maven-1-9-0
+      workspaces:
+        - name: source
+          workspace: pipeline-ws-dev
+        - name: maven-settings
+          workspace: pipeline-ws-dev
+    - name: sonarqube-scanner
+      params:
+        - name: PROJECT_VERSION
+          value: '1.0'
+        - name: SONAR_SCANNER_IMAGE
+          value: >-
+            docker.io/sonarsource/sonar-scanner-cli:4.6@sha256:7a976330a8bad1beca6584c1c118e946e7a25fdc5b664d5c0a869a6577d81b4f
+        - name: SONAR_HOST_URL
+          value: 'https://sonarcloud.io/'
+        - name: SONAR_ORGANIZATION
+          value: quarkustest
+        - name: SONAR_PROJECT_KEY
+          value: quarkustest_quarkus-app
+        - name: SONAR_LOGIN_KEY
+          value: 9adb18c5b2734abafda5774a09be5ae50bd84f32
+      runAfter:
+        - maven-build
+      taskRef:
+        kind: Task
+        name: sonarqube-scanner
+      workspaces:
+        - name: source
+          workspace: pipeline-ws-dev
+  workspaces:
+    - name: pipeline-ws-dev
+
