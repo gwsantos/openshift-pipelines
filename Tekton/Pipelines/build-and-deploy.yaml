@@ -23,7 +23,7 @@ metadata:
       manager: Mozilla
       operation: Update
       time: '2023-01-25T15:48:54Z'
-  name: build-and-deploy
+  name: ci-pipeline
   namespace: quarkus-app-dev
   resourceVersion: '408351'
   uid: a58e683c-4f13-4478-b8fa-4cb5581eccba
