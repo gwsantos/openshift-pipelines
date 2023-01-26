@@ -8,11 +8,11 @@ metadata:
     tekton.dev/pipelines.minVersion: 0.17.0
     tekton.dev/platforms: linux/amd64
     tekton.dev/tags: security
-  resourceVersion: '384838'
+  resourceVersion: '266076'
   name: sonarqube-scanner
-  uid: 8be95762-d324-4f4b-b561-dfadc1328719
-  creationTimestamp: '2023-01-24T18:06:21Z'
-  generation: 1
+  uid: 57c6440a-93de-4215-89f4-e0ec45402c75
+  creationTimestamp: '2023-01-25T15:32:33Z'
+  generation: 4
   managedFields:
     - apiVersion: tekton.dev/v1beta1
       fieldsType: FieldsV1
@@ -33,11 +33,18 @@ metadata:
           .: {}
           'f:description': {}
           'f:params': {}
-          'f:steps': {}
           'f:workspaces': {}
+      manager: kubectl-create
+      operation: Update
+      time: '2023-01-25T15:32:33Z'
+    - apiVersion: tekton.dev/v1beta1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          'f:steps': {}
       manager: Mozilla
       operation: Update
-      time: '2023-01-24T18:06:21Z'
+      time: '2023-01-25T17:04:05Z'
   namespace: quarkus-app-dev
   labels:
     app.kubernetes.io/version: '0.4'
@@ -99,6 +106,14 @@ spec:
           value: $(params.SOURCE_TO_SCAN)
         - name: SONAR_ORGANIZATION
           value: $(params.SONAR_ORGANIZATION)
+        - name: SONAR_JAVA_BINARIES
+          value: ../target/classes
+        - name: SONAR_LOGIN
+          valueFrom:
+            secretKeyRef:
+              name: sonarcloud-token
+              key: SONAR_LOGIN
+              #e7b1de92c0d31ed392b889a9a84799deacfb8dd5
       image: 'registry.access.redhat.com/ubi8/ubi-minimal:8.2'
       name: sonar-properties-create
       resources: {}
@@ -199,4 +214,3 @@ spec:
         A workspace containing a login or password for use within sonarqube.
       name: sonar-credentials
       optional: true
-

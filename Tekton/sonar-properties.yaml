@@ -1,0 +1,7 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: sonar-properties
+  namespace: quarkus-app-dev
+data:
+  sonar-project.properties: sonar.organization=quarkustest

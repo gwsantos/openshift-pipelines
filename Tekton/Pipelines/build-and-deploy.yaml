@@ -1,0 +1,160 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  creationTimestamp: '2023-01-25T15:31:10Z'
+  generation: 14
+  managedFields:
+    - apiVersion: tekton.dev/v1beta1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec': {}
+      manager: kubectl-create
+      operation: Update
+      time: '2023-01-25T15:31:10Z'
+    - apiVersion: tekton.dev/v1beta1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          'f:finally': {}
+          'f:params': {}
+          'f:resources': {}
+          'f:tasks': {}
+          'f:workspaces': {}
+      manager: Mozilla
+      operation: Update
+      time: '2023-01-25T15:48:54Z'
+  name: build-and-deploy
+  namespace: quarkus-app-dev
+  resourceVersion: '408351'
+  uid: a58e683c-4f13-4478-b8fa-4cb5581eccba
+spec:
+  tasks:
+    - name: github-fetch-code
+      params:
+        - name: url
+          value: 'https://github.com/gwsantos/quarkus-app.git'
+        - name: revision
+          value: dev
+        - name: submodules
+          value: 'true'
+        - name: depth
+          value: '1'
+        - name: sslVerify
+          value: 'true'
+        - name: crtFileName
+          value: ca-bundle.crt
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'true'
+        - name: gitInitImage
+          value: >-
+            registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:2b4c4958cabdceffefef68940608f2c7e6774c0b94ba3eb49fa1b9ff0b544e8c
+        - name: userHome
+          value: /tekton/home
+      taskRef:
+        kind: ClusterTask
+        name: git-clone-1-9-0
+      workspaces:
+        - name: output
+          workspace: pipeline-ws-dev
+    - name: build
+      params:
+        - name: MAVEN_IMAGE
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/openshift/java:latest
+        - name: GOALS
+          value:
+            - package
+        - name: PROXY_PROTOCOL
+          value: http
+        - name: CONTEXT_DIR
+          value: .
+      runAfter:
+        - junit-tests
+      taskRef:
+        kind: ClusterTask
+        name: maven-1-9-0
+      workspaces:
+        - name: source
+          workspace: pipeline-ws-dev
+        - name: maven-settings
+          workspace: pipeline-ws-dev
+    - name: sonarqube
+      params:
+        - name: SONAR_HOST_URL
+          value: 'https://sonarcloud.io'
+        - name: SONAR_PROJECT_KEY
+          value: quarkustest_quarkus-app
+        - name: PROJECT_VERSION
+          value: '1.0'
+        - name: SOURCE_TO_SCAN
+          value: target
+        - name: SONAR_ORGANIZATION
+          value: quarkustest
+      runAfter:
+        - build
+      taskRef:
+        kind: Task
+        name: sonarqube-scanner
+      workspaces:
+        - name: source
+          workspace: pipeline-ws-dev
+        - name: sonar-settings
+          workspace: pipeline-ws-dev
+        - name: sonar-credentials
+          workspace: pipeline-ws-dev
+    - name: junit-tests
+      params:
+        - name: MAVEN_IMAGE
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/openshift/java:latest
+        - name: GOALS
+          value:
+            - test
+        - name: PROXY_PROTOCOL
+          value: http
+        - name: CONTEXT_DIR
+          value: .
+      runAfter:
+        - github-fetch-code
+      taskRef:
+        kind: ClusterTask
+        name: maven-1-9-0
+      workspaces:
+        - name: source
+          workspace: pipeline-ws-dev
+        - name: maven-settings
+          workspace: pipeline-ws-dev
+    - name: push-to-nexus
+      params:
+        - name: MAVEN_IMAGE
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/openshift/java:latest
+        - name: GOALS
+          value:
+            - deploy
+        - name: PROXY_PROTOCOL
+          value: http
+        - name: CONTEXT_DIR
+          value: .
+        - name: MAVEN_MIRROR_URL
+          value: 'http://nexus.apps-crc.testing:8081/nexus/content/groups/public'
+        - name: SERVER_USER
+          value: deployment
+        - name: SERVER_PASSWORD
+          value: deploy1234
+      runAfter:
+        - sonarqube
+      taskRef:
+        kind: ClusterTask
+        name: maven
+      workspaces:
+        - name: source
+          workspace: pipeline-ws-dev
+        - name: maven-settings
+          workspace: maven-nexus
+  workspaces:
+    - name: pipeline-ws-dev
+    - name: maven-nexus
+
