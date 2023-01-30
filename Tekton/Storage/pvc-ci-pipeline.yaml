@@ -1,11 +1,12 @@
-kind: PersistentVolumeClaim
 apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: tekton-workspace
+  name: pvc-ci-pipeline
   namespace: quarkus-app-dev
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: default
   resources:
     requests:
-      storage: 2Gi
+      storage: 30Gi

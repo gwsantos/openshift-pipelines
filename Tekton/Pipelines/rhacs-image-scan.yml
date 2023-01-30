@@ -1,0 +1,119 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  annotations:
+    openshift.io/installed-from: tektonhub
+    tekton.dev/categories: Security
+    tekton.dev/displayName: Scan an image for vulnerabilities with Red Hat Advanced Cluster Security
+    tekton.dev/pipelines.minVersion: 0.18.0
+    tekton.dev/platforms: linux/amd64
+    tekton.dev/tags: security
+  resourceVersion: '16626534'
+  name: rhacs-image-scan
+  uid: 42d01b4e-9b39-4915-b63e-c26d6e5c6ae8
+  creationTimestamp: '2023-01-30T19:31:02Z'
+  generation: 1
+  managedFields:
+    - apiVersion: tekton.dev/v1beta1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:openshift.io/installed-from': {}
+            'f:tekton.dev/categories': {}
+            'f:tekton.dev/displayName': {}
+            'f:tekton.dev/pipelines.minVersion': {}
+            'f:tekton.dev/platforms': {}
+            'f:tekton.dev/tags': {}
+          'f:labels':
+            .: {}
+            'f:app.kubernetes.io/version': {}
+        'f:spec':
+          .: {}
+          'f:description': {}
+          'f:params': {}
+          'f:steps': {}
+      manager: Mozilla
+      operation: Update
+      time: '2023-01-30T19:31:02Z'
+  namespace: $(APP_NAME)
+  labels:
+    app.kubernetes.io/version: '3.71'
+spec:
+  description: >-
+    Scan an image with Red Hat Advanced Cluster Security.
+
+    This task allows you to return full vulnerability scan results for an image
+    in CSV, Table, or JSON formats. The companion rhacs-image-check task checks
+    an image against build-time policies.
+  params:
+    - default: rox-central-endpoint
+      description: >-
+        Name of secret containing the address:port tuple for RHACS Stackrox
+        Central.
+      name: rox_central_endpoint
+      type: string
+    - default: rox-api-token
+      description: >-
+        Name of secret containing the RHACS StackRox API token with CI
+        permissions.
+      name: rox_api_token
+      type: string
+    - default: 'quay.io/stackrox-io/roxctl:3.71.0'
+      description: Image providing the roxctl tool.
+      name: rox_image
+    - default: $(params.IMAGE)
+      description: >
+        Full name of image to scan.
+
+
+        SHA 256 digest may be included to ensure scan of sequental runs with
+        same tag.
+
+        Examples: 'gcr.io/rox/sample:5.0-rc1', '$(params.IMAGE)',
+        '$(params.IMAGE)@$(tasks.buildah.results.IMAGE_DIGEST)'
+      name: image
+      type: string
+    - default: json
+      description: Results output format (json | csv | table)
+      name: output_format
+      type: string
+    - default: 'false'
+      description: >
+        Do not verify TLS certificates.
+
+
+        When set to "true", skip verifying the TLS certs of the Central endpoint
+        and registry.
+      name: insecure-skip-tls-verify
+      type: string
+  steps:
+    - args:
+        - image
+        - scan
+        - '--endpoint=$(ROX_CENTRAL_ENDPOINT)'
+        - '--insecure-skip-tls-verify=$(INSECURE)'
+        - '--output=$(OUTPUT)'
+        - '--image=$(IMAGE)'
+      env:
+        - name: HOME
+          value: /tekton/home
+        - name: IMAGE
+          value: $(params.image)
+        - name: INSECURE
+          value: $(params.insecure-skip-tls-verify)
+        - name: OUTPUT
+          value: $(params.output_format)
+        - name: ROX_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: rox_api_token
+              name: $(params.rox_api_token)
+        - name: ROX_CENTRAL_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              key: rox_central_endpoint
+              name: $(params.rox_central_endpoint)
+      image: $(params.rox_image)
+      name: rox-image-scan

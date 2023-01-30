@@ -1,0 +1,235 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  creationTimestamp: '2023-01-26T18:33:36Z'
+  generation: 6
+  managedFields:
+    - apiVersion: tekton.dev/v1beta1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          .: {}
+          'f:finally': {}
+          'f:params': {}
+          'f:resources': {}
+          'f:tasks': {}
+          'f:workspaces': {}
+      manager: Mozilla
+      operation: Update
+      time: '2023-01-26T18:33:36Z'
+  name: build-and-deploy-v2
+  namespace: quarkus-app-dev
+  resourceVersion: '16723368'
+  uid: 436019eb-c086-41a8-89f0-e79df522674d
+spec:
+  finally: []
+  params: []
+  resources: []
+  tasks:
+    - name: github-fetch-code
+      params:
+        - name: url
+          value: 'https://github.com/gwsantos/quarkus-app.git'
+        - name: revision
+          value: dev
+        - name: submodules
+          value: 'true'
+        - name: depth
+          value: '1'
+        - name: sslVerify
+          value: 'true'
+        - name: crtFileName
+          value: ca-bundle.crt
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'true'
+        - name: gitInitImage
+          value: >-
+            registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:2b4c4958cabdceffefef68940608f2c7e6774c0b94ba3eb49fa1b9ff0b544e8c
+        - name: userHome
+          value: /tekton/home
+      taskRef:
+        kind: ClusterTask
+        name: git-clone-1-9-0
+      workspaces:
+        - name: output
+          workspace: pipeline-ws-dev
+    - name: build
+      params:
+        - name: MAVEN_IMAGE
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/openshift/java:latest
+        - name: GOALS
+          value:
+            - package
+        - name: PROXY_PROTOCOL
+          value: http
+        - name: CONTEXT_DIR
+          value: .
+      runAfter:
+        - junit-tests
+      taskRef:
+        kind: ClusterTask
+        name: maven-1-9-0
+      workspaces:
+        - name: source
+          workspace: pipeline-ws-dev
+        - name: maven-settings
+          workspace: pipeline-ws-dev
+    - name: sonarqube
+      params:
+        - name: SONAR_HOST_URL
+          value: 'https://sonarcloud.io'
+        - name: SONAR_PROJECT_KEY
+          value: quarkustest_quarkus-app
+        - name: PROJECT_VERSION
+          value: '1.0'
+        - name: SOURCE_TO_SCAN
+          value: target
+        - name: SONAR_ORGANIZATION
+          value: quarkustest
+      runAfter:
+        - build
+      taskRef:
+        kind: Task
+        name: sonarqube-scanner
+      workspaces:
+        - name: source
+          workspace: pipeline-ws-dev
+        - name: sonar-settings
+          workspace: pipeline-ws-dev
+        - name: sonar-credentials
+          workspace: pipeline-ws-dev
+    - name: junit-tests
+      params:
+        - name: MAVEN_IMAGE
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/openshift/java:latest
+        - name: GOALS
+          value:
+            - test
+        - name: PROXY_PROTOCOL
+          value: http
+        - name: CONTEXT_DIR
+          value: .
+      runAfter:
+        - github-fetch-code
+      taskRef:
+        kind: ClusterTask
+        name: maven-1-9-0
+      workspaces:
+        - name: source
+          workspace: pipeline-ws-dev
+        - name: maven-settings
+          workspace: pipeline-ws-dev
+    - name: push-to-nexus
+      params:
+        - name: MAVEN_IMAGE
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/openshift/java:latest
+        - name: GOALS
+          value:
+            - deploy
+        - name: PROXY_PROTOCOL
+          value: http
+        - name: CONTEXT_DIR
+          value: .
+        - name: MAVEN_MIRROR_URL
+          value: $(NEXUS_REPO_URL)
+        - name: SERVER_USER
+          value: deployment
+        - name: SERVER_PASSWORD
+          value: deploy1234
+      runAfter:
+        - sonarqube
+      taskRef:
+        kind: ClusterTask
+        name: maven
+      workspaces:
+        - name: source
+          workspace: pipeline-ws-dev
+        - name: maven-settings
+          workspace: pipeline-ws-dev
+    - name: rhacs-image-scan
+      params:
+        - name: rox_central_endpoint
+          value: rox-central-endpoint
+        - name: rox_api_token
+          value: rox-api-token
+        - name: rox_image
+          value: 'quay.io/stackrox-io/roxctl:3.71.0'
+        - name: image
+          value: $(params.IMAGE)
+        - name: output_format
+          value: json
+        - name: insecure-skip-tls-verify
+          value: 'false'
+      runAfter:
+        - build-image
+      taskRef:
+        kind: Task
+        name: rhacs-image-scan
+    - name: deploy-to-dev
+      params:
+        - name: MAVEN_IMAGE
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/openshift/java:latest
+        - name: GOALS
+          value:
+            - deploy
+        - name: PROXY_PROTOCOL
+          value: http
+        - name: CONTEXT_DIR
+          value: .
+      runAfter:
+        - buildah-push
+      taskRef:
+        kind: ClusterTask
+        name: maven
+      workspaces:
+        - name: source
+          workspace: pipeline-ws-dev
+        - name: maven-settings
+          workspace: pipeline-ws-dev
+    - name: build-image
+      params:
+        - name: IMAGE
+          value: 'https://quay.io/repository/gdesouza/quarkus-app:latest'
+        - name: STORAGE_DRIVER
+          value: overlay
+        - name: DOCKERFILE
+          value: ./Dockerfile
+        - name: IMAGE_PUSH_SECRET_NAME
+          value: gdesouza-openshift-pull-secret
+      runAfter:
+        - push-to-nexus
+      taskRef:
+        kind: Task
+        name: build-image
+      workspaces:
+        - name: source
+          workspace: pipeline-ws-dev
+    - name: buildah-push
+      params:
+        - name: IMAGE
+          value: 'https://quay.io/repository/gdesouza/quarkus-app:latest'
+        - name: STORAGE_DRIVER
+          value: overlay
+        - name: DOCKERFILE
+          value: ./Dockerfile
+        - name: IMAGE_PUSH_SECRET_NAME
+          value: gdesouza-openshift-pull-secret
+      runAfter:
+        - rhacs-image-scan
+      taskRef:
+        kind: Task
+        name: buildah-push
+      workspaces:
+        - name: source
+          workspace: pipeline-ws-dev
+  workspaces:
+    - name: pipeline-ws-dev
+      optional: false
+    - name: maven-nexus
+      optional: false
