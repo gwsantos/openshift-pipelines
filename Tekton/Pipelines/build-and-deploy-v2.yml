@@ -1,26 +1,8 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  creationTimestamp: '2023-01-26T18:33:36Z'
-  generation: 6
-  managedFields:
-    - apiVersion: tekton.dev/v1beta1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:spec':
-          .: {}
-          'f:finally': {}
-          'f:params': {}
-          'f:resources': {}
-          'f:tasks': {}
-          'f:workspaces': {}
-      manager: Mozilla
-      operation: Update
-      time: '2023-01-26T18:33:36Z'
   name: build-and-deploy-v2
   namespace: quarkus-app-dev
-  resourceVersion: '16723368'
-  uid: 436019eb-c086-41a8-89f0-e79df522674d
 spec:
   finally: []
   params: []
@@ -192,7 +174,7 @@ spec:
           workspace: pipeline-ws-dev
         - name: maven-settings
           workspace: pipeline-ws-dev
-    - name: build-image
+    - name: buildah-build
       params:
         - name: IMAGE
           value: 'https://quay.io/repository/gdesouza/quarkus-app:latest'
@@ -206,7 +188,7 @@ spec:
         - push-to-nexus
       taskRef:
         kind: Task
-        name: build-image
+        name: buildah-build
       workspaces:
         - name: source
           workspace: pipeline-ws-dev
