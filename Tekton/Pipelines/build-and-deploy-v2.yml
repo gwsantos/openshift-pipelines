@@ -213,5 +213,3 @@ spec:
   workspaces:
     - name: pipeline-ws-dev
       optional: false
-    - name: maven-nexus
-      optional: false
