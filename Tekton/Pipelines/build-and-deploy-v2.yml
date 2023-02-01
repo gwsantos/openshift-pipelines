@@ -2,7 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: build-and-deploy-v2
-  namespace: quarkus-app-dev
+  namespace: test
 spec:
   finally: []
   params: []
