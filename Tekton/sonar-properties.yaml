@@ -2,6 +2,5 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: sonar-properties
-  namespace: $(APP_NAME)
 data:
   sonar-project.properties: sonar.organization=$(params.SONAR_ORGANIZATION)
