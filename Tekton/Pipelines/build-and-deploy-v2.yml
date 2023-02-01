@@ -176,7 +176,7 @@ spec:
           workspace: $(WORKSPACE_NAME)
         - name: maven-settings
           workspace: $(WORKSPACE_NAME)
-    - name: build-image
+    - name: buildah-build
       params:
         - name: IMAGE
           value: $(QUAY_REPO_IMAGE_NAME)
