@@ -2,6 +2,6 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: sonar-properties
-  namespace: quarkus-app-dev
+  namespace: $(APP_NAME)
 data:
-  sonar-project.properties: sonar.organization=quarkustest
+  sonar-project.properties: sonar.organization=$(params.SONAR_ORGANIZATION)

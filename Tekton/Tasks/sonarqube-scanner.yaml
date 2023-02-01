@@ -1,51 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  annotations:
-    openshift.io/installed-from: tektonhub
-    tekton.dev/categories: Security
-    tekton.dev/displayName: sonarqube scanner
-    tekton.dev/pipelines.minVersion: 0.17.0
-    tekton.dev/platforms: linux/amd64
-    tekton.dev/tags: security
-  resourceVersion: '266076'
   name: sonarqube-scanner
-  uid: 57c6440a-93de-4215-89f4-e0ec45402c75
-  creationTimestamp: '2023-01-25T15:32:33Z'
-  generation: 4
-  managedFields:
-    - apiVersion: tekton.dev/v1beta1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:annotations':
-            .: {}
-            'f:openshift.io/installed-from': {}
-            'f:tekton.dev/categories': {}
-            'f:tekton.dev/displayName': {}
-            'f:tekton.dev/pipelines.minVersion': {}
-            'f:tekton.dev/platforms': {}
-            'f:tekton.dev/tags': {}
-          'f:labels':
-            .: {}
-            'f:app.kubernetes.io/version': {}
-        'f:spec':
-          .: {}
-          'f:description': {}
-          'f:params': {}
-          'f:workspaces': {}
-      manager: kubectl-create
-      operation: Update
-      time: '2023-01-25T15:32:33Z'
-    - apiVersion: tekton.dev/v1beta1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:spec':
-          'f:steps': {}
-      manager: Mozilla
-      operation: Update
-      time: '2023-01-25T17:04:05Z'
-  namespace: quarkus-app-dev
   labels:
     app.kubernetes.io/version: '0.4'
 spec:

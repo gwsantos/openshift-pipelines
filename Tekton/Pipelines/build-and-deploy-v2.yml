@@ -1,26 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  creationTimestamp: '2023-01-26T18:33:36Z'
-  generation: 6
-  managedFields:
-    - apiVersion: tekton.dev/v1beta1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:spec':
-          .: {}
-          'f:finally': {}
-          'f:params': {}
-          'f:resources': {}
-          'f:tasks': {}
-          'f:workspaces': {}
-      manager: Mozilla
-      operation: Update
-      time: '2023-01-26T18:33:36Z'
   name: build-and-deploy-v2
-  namespace: quarkus-app-dev
-  resourceVersion: '16723368'
-  uid: 436019eb-c086-41a8-89f0-e79df522674d
 spec:
   finally: []
   params: []
@@ -29,9 +10,9 @@ spec:
     - name: github-fetch-code
       params:
         - name: url
-          value: 'https://github.com/gwsantos/quarkus-app.git'
+          value: $(GIT_REPO_URL) #GitHub, BitBucket, etc
         - name: revision
-          value: dev
+          value: $(BRANCH)
         - name: submodules
           value: 'true'
         - name: depth
@@ -54,7 +35,7 @@ spec:
         name: git-clone-1-9-0
       workspaces:
         - name: output
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
     - name: build
       params:
         - name: MAVEN_IMAGE
@@ -74,9 +55,9 @@ spec:
         name: maven-1-9-0
       workspaces:
         - name: source
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
         - name: maven-settings
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
     - name: sonarqube
       params:
         - name: SONAR_HOST_URL
@@ -96,11 +77,11 @@ spec:
         name: sonarqube-scanner
       workspaces:
         - name: source
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
         - name: sonar-settings
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
         - name: sonar-credentials
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
     - name: junit-tests
       params:
         - name: MAVEN_IMAGE
@@ -120,9 +101,9 @@ spec:
         name: maven-1-9-0
       workspaces:
         - name: source
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
         - name: maven-settings
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
     - name: push-to-nexus
       params:
         - name: MAVEN_IMAGE
@@ -138,9 +119,9 @@ spec:
         - name: MAVEN_MIRROR_URL
           value: $(NEXUS_REPO_URL)
         - name: SERVER_USER
-          value: deployment
+          value: $(NEXUS_USERNAME)
         - name: SERVER_PASSWORD
-          value: deploy1234
+          value: $(NEXUS_PASSWORD)
       runAfter:
         - sonarqube
       taskRef:
@@ -148,9 +129,9 @@ spec:
         name: maven
       workspaces:
         - name: source
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
         - name: maven-settings
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
     - name: rhacs-image-scan
       params:
         - name: rox_central_endpoint
@@ -189,9 +170,9 @@ spec:
         name: maven
       workspaces:
         - name: source
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
         - name: maven-settings
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
     - name: build-image
       params:
         - name: IMAGE
@@ -201,7 +182,7 @@ spec:
         - name: DOCKERFILE
           value: ./Dockerfile
         - name: IMAGE_PUSH_SECRET_NAME
-          value: gdesouza-openshift-pull-secret
+          value: $(QUAY_PUSH_SECRET_NAME)
       runAfter:
         - push-to-nexus
       taskRef:
@@ -209,17 +190,17 @@ spec:
         name: build-image
       workspaces:
         - name: source
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
     - name: buildah-push
       params:
         - name: IMAGE
-          value: 'https://quay.io/repository/gdesouza/quarkus-app:latest'
+          value: $(QUAY_REPO_IMAGE_NAME)
         - name: STORAGE_DRIVER
           value: overlay
         - name: DOCKERFILE
           value: ./Dockerfile
         - name: IMAGE_PUSH_SECRET_NAME
-          value: gdesouza-openshift-pull-secret
+          value: $(QUAY_PUSH_SECRET_NAME)
       runAfter:
         - rhacs-image-scan
       taskRef:
@@ -227,9 +208,9 @@ spec:
         name: buildah-push
       workspaces:
         - name: source
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
   workspaces:
-    - name: pipeline-ws-dev
+    - name: $(WORKSPACE_NAME)
       optional: false
     - name: maven-nexus
-      optional: false
+      optional: true
