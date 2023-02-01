@@ -10,9 +10,9 @@ spec:
     - name: github-fetch-code
       params:
         - name: url
-          value: $(GIT_REPO_URL) #GitHub, BitBucket, etc
+          value: '' #GitHub, BitBucket, etc
         - name: revision
-          value: $(BRANCH)
+          value: ''
         - name: submodules
           value: 'true'
         - name: depth
@@ -141,7 +141,7 @@ spec:
         - name: rox_image
           value: 'quay.io/stackrox-io/roxctl:3.71.0'
         - name: image
-          value: $(params.IMAGE)
+          value: ''
         - name: output_format
           value: json
         - name: insecure-skip-tls-verify
@@ -176,7 +176,7 @@ spec:
     - name: build-image
       params:
         - name: IMAGE
-          value: 'https://quay.io/repository/gdesouza/quarkus-app:latest'
+          value: $(QUAY_REPO_IMAGE_NAME)
         - name: STORAGE_DRIVER
           value: overlay
         - name: DOCKERFILE

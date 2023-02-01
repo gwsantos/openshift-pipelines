@@ -1,0 +1,21 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: image-registry-storage
+  namespace: openshift-image-registry
+  finalizers:
+    - kubernetes.io/pvc-protection
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: hostpath-provisioner
+  volumeMode: Filesystem
+status:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 30Gi
+

@@ -1,32 +1,8 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  creationTimestamp: '2023-01-25T15:31:10Z'
-  generation: 14
-  managedFields:
-    - apiVersion: tekton.dev/v1beta1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:spec': {}
-      manager: kubectl-create
-      operation: Update
-      time: '2023-01-25T15:31:10Z'
-    - apiVersion: tekton.dev/v1beta1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:spec':
-          'f:finally': {}
-          'f:params': {}
-          'f:resources': {}
-          'f:tasks': {}
-          'f:workspaces': {}
-      manager: Mozilla
-      operation: Update
-      time: '2023-01-25T15:48:54Z'
   name: ci-pipeline
-  namespace: quarkus-app-dev
-  resourceVersion: '408351'
-  uid: a58e683c-4f13-4478-b8fa-4cb5581eccba
+  namespace: test
 spec:
   tasks:
     - name: github-fetch-code
@@ -57,7 +33,7 @@ spec:
         name: git-clone-1-9-0
       workspaces:
         - name: output
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
     - name: build
       params:
         - name: MAVEN_IMAGE
@@ -77,9 +53,9 @@ spec:
         name: maven-1-9-0
       workspaces:
         - name: source
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
         - name: maven-settings
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
     - name: sonarqube
       params:
         - name: SONAR_HOST_URL
@@ -99,11 +75,11 @@ spec:
         name: sonarqube-scanner
       workspaces:
         - name: source
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
         - name: sonar-settings
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
         - name: sonar-credentials
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
     - name: junit-tests
       params:
         - name: MAVEN_IMAGE
@@ -123,9 +99,9 @@ spec:
         name: maven-1-9-0
       workspaces:
         - name: source
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
         - name: maven-settings
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
     - name: push-to-nexus
       params:
         - name: MAVEN_IMAGE
@@ -151,10 +127,9 @@ spec:
         name: maven
       workspaces:
         - name: source
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
         - name: maven-settings
-          workspace: maven-nexus
+          workspace: $(WORKSPACE_NAME)
   workspaces:
-    - name: pipeline-ws-dev
-    - name: maven-nexus
+    - name: $(WORKSPACE_NAME)
 
