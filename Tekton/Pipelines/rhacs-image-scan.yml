@@ -1,43 +1,8 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  annotations:
-    openshift.io/installed-from: tektonhub
-    tekton.dev/categories: Security
-    tekton.dev/displayName: Scan an image for vulnerabilities with Red Hat Advanced Cluster Security
-    tekton.dev/pipelines.minVersion: 0.18.0
-    tekton.dev/platforms: linux/amd64
-    tekton.dev/tags: security
-  resourceVersion: '16626534'
   name: rhacs-image-scan
-  uid: 42d01b4e-9b39-4915-b63e-c26d6e5c6ae8
-  creationTimestamp: '2023-01-30T19:31:02Z'
-  generation: 1
-  managedFields:
-    - apiVersion: tekton.dev/v1beta1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:annotations':
-            .: {}
-            'f:openshift.io/installed-from': {}
-            'f:tekton.dev/categories': {}
-            'f:tekton.dev/displayName': {}
-            'f:tekton.dev/pipelines.minVersion': {}
-            'f:tekton.dev/platforms': {}
-            'f:tekton.dev/tags': {}
-          'f:labels':
-            .: {}
-            'f:app.kubernetes.io/version': {}
-        'f:spec':
-          .: {}
-          'f:description': {}
-          'f:params': {}
-          'f:steps': {}
-      manager: Mozilla
-      operation: Update
-      time: '2023-01-30T19:31:02Z'
-  namespace: $(APP_NAME)
+  namespace: test
   labels:
     app.kubernetes.io/version: '3.71'
 spec:
@@ -63,7 +28,7 @@ spec:
     - default: 'quay.io/stackrox-io/roxctl:3.71.0'
       description: Image providing the roxctl tool.
       name: rox_image
-    - default: $(params.IMAGE)
+    - default: $(params.image)
       description: >
         Full name of image to scan.
 
