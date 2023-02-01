@@ -142,7 +142,7 @@ spec:
         - name: rox_image
           value: 'quay.io/stackrox-io/roxctl:3.71.0'
         - name: image
-          value: $(params.IMAGE)
+          value: $(params.image)
         - name: output_format
           value: json
         - name: insecure-skip-tls-verify
