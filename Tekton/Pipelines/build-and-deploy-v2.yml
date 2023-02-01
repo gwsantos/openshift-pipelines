@@ -2,6 +2,9 @@ apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: build-and-deploy-v2
+  namespace: quarkus-app-dev
+  resourceVersion: '16723368'
+  uid: 436019eb-c086-41a8-89f0-e79df522674d
 spec:
   finally: []
   params: []
@@ -147,7 +150,7 @@ spec:
         - name: insecure-skip-tls-verify
           value: 'false'
       runAfter:
-        - build-image
+        - buildah-build
       taskRef:
         kind: Task
         name: rhacs-image-scan
@@ -172,7 +175,7 @@ spec:
         - name: source
           workspace: $(WORKSPACE_NAME)
         - name: maven-settings
-          workspace: $(WORKSPACE_NAME)
+          workspace: pipeline-ws-dev
     - name: build-image
       params:
         - name: IMAGE
@@ -187,7 +190,7 @@ spec:
         - push-to-nexus
       taskRef:
         kind: Task
-        name: build-image
+        name: buildah-build
       workspaces:
         - name: source
           workspace: $(WORKSPACE_NAME)
@@ -213,4 +216,4 @@ spec:
     - name: $(WORKSPACE_NAME)
       optional: false
     - name: maven-nexus
-      optional: true
+      optional: false

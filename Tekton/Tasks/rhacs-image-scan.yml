@@ -2,6 +2,9 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: rhacs-image-scan
+  namespace: test
+  labels:
+    app.kubernetes.io/version: '3.71'
 spec:
   description: >-
     Scan an image with Red Hat Advanced Cluster Security.
@@ -25,7 +28,7 @@ spec:
     - default: 'quay.io/stackrox-io/roxctl:3.71.0'
       description: Image providing the roxctl tool.
       name: rox_image
-    - default: $(IMAGE)
+    - default: $(params.image)
       description: >
         Full name of image to scan.
 
