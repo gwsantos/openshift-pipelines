@@ -2,7 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: build-and-deploy-v2
-  namespace: quarkus-app-dev
+  namespace: test
   resourceVersion: '16723368'
   uid: 436019eb-c086-41a8-89f0-e79df522674d
 spec:
