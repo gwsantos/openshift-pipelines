@@ -175,7 +175,7 @@ spec:
         - name: source
           workspace: $(WORKSPACE_NAME)
         - name: maven-settings
-          workspace: pipeline-ws-dev
+          workspace: $(WORKSPACE_NAME)
     - name: build-image
       params:
         - name: IMAGE
