@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-ci-pipeline
-  namespace: quarkus-app-dev
+  namespace: $(APP_NAME)
 spec:
   accessModes:
     - ReadWriteOnce
