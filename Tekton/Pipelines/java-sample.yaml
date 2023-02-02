@@ -1,0 +1,105 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  creationTimestamp: '2023-02-02T15:42:22Z'
+  generation: 11
+  managedFields:
+    - apiVersion: tekton.dev/v1beta1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          .: {}
+          'f:finally': {}
+          'f:params': {}
+          'f:resources': {}
+          'f:tasks': {}
+          'f:workspaces': {}
+      manager: Mozilla
+      operation: Update
+      time: '2023-02-02T15:42:22Z'
+  name: java-sample
+  namespace: test
+  resourceVersion: '347499'
+  uid: 6666ac70-58be-49f3-b9ec-6806553d1b2b
+spec:
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: 'https://github.com/gwsantos/openshift-quickstarts.git'
+        - name: revision
+          value: master
+        - name: submodules
+          value: 'true'
+        - name: depth
+          value: '1'
+        - name: sslVerify
+          value: 'true'
+        - name: crtFileName
+          value: ca-bundle.crt
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'true'
+        - name: gitInitImage
+          value: >-
+            registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:2b4c4958cabdceffefef68940608f2c7e6774c0b94ba3eb49fa1b9ff0b544e8c
+        - name: userHome
+          value: /tekton/home
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: main-workspace
+    - name: maven
+      params:
+        - name: MAVEN_IMAGE
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/openshift/java:latest
+        - name: GOALS
+          value:
+            - package
+        - name: PROXY_PROTOCOL
+          value: http
+        - name: CONTEXT_DIR
+          value: undertow-servlet
+      runAfter:
+        - generate-and-push-container-image
+      taskRef:
+        kind: ClusterTask
+        name: maven
+      workspaces:
+        - name: source
+          workspace: main-workspace
+        - name: maven-settings
+          workspace: main-workspace
+    - name: generate-and-push-container-image
+      params:
+        - name: IMAGE
+          value: undertow-servlet
+        - name: BUILDER_IMAGE
+          value: >-
+            registry.redhat.io/rhel8/buildah@sha256:ac0b8714cc260c94435cab46fe41b3de0ccbc3d93e38c395fa9d52ac49e521fe
+        - name: STORAGE_DRIVER
+          value: vfs
+        - name: DOCKERFILE
+          value: ./Dockerfile
+        - name: CONTEXT
+          value: undertow-servlet
+        - name: TLSVERIFY
+          value: 'true'
+        - name: FORMAT
+          value: oci
+        - name: SKIP_PUSH
+          value: 'false'
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: ClusterTask
+        name: buildah
+      workspaces:
+        - name: source
+          workspace: main-workspace
+  workspaces:
+    - name: main-workspace
