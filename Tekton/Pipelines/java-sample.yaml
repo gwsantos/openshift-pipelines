@@ -1,12 +1,28 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  creationTimestamp: '2023-02-02T15:42:22Z'
-  generation: 11
+  creationTimestamp: '2023-02-02T20:09:27Z'
+  generation: 6
+  labels:
+    app.kubernetes.io/instance: java-app
+    app.kubernetes.io/name: java-app
+    operator.tekton.dev/operand-name: openshift-pipelines-addons
+    pipeline.openshift.io/runtime: java
+    pipeline.openshift.io/runtime-version: openjdk-17-ubi8
+    pipeline.openshift.io/type: kubernetes
   managedFields:
     - apiVersion: tekton.dev/v1beta1
       fieldsType: FieldsV1
       fieldsV1:
+        'f:metadata':
+          'f:labels':
+            .: {}
+            'f:app.kubernetes.io/instance': {}
+            'f:app.kubernetes.io/name': {}
+            'f:operator.tekton.dev/operand-name': {}
+            'f:pipeline.openshift.io/runtime': {}
+            'f:pipeline.openshift.io/runtime-version': {}
+            'f:pipeline.openshift.io/type': {}
         'f:spec':
           .: {}
           'f:finally': {}
@@ -16,90 +32,78 @@ metadata:
           'f:workspaces': {}
       manager: Mozilla
       operation: Update
-      time: '2023-02-02T15:42:22Z'
-  name: java-sample
+      time: '2023-02-02T20:34:38Z'
+  name: java-app
   namespace: test
-  resourceVersion: '347499'
-  uid: 6666ac70-58be-49f3-b9ec-6806553d1b2b
+  resourceVersion: '60639'
+  uid: bca4c9b6-00e9-40b8-bfd6-5178f7421d9a
 spec:
+  params:
+    - default: java-app
+      name: APP_NAME
+      type: string
+    - default: 'https://github.com/gwsantos/openshift-quickstarts.git'
+      name: GIT_REPO
+      type: string
+    - default: master
+      name: GIT_REVISION
+      type: string
+    - default: 'image-registry.openshift-image-registry.svc:5000/test/java-app'
+      name: IMAGE_NAME
+      type: string
+    - default: undertow-servlet
+      name: PATH_CONTEXT
+      type: string
+    - default: openjdk-17-ubi8
+      name: VERSION
+      type: string
+    - default: 'https://quay.io/gdesouza/java-sample'
+      name: QUAY_REPO_URL
+      type: string
   tasks:
-    - name: git-clone
+    - name: fetch-repository
       params:
         - name: url
-          value: 'https://github.com/gwsantos/openshift-quickstarts.git'
+          value: $(params.GIT_REPO)
         - name: revision
-          value: master
-        - name: submodules
-          value: 'true'
-        - name: depth
-          value: '1'
-        - name: sslVerify
-          value: 'true'
-        - name: crtFileName
-          value: ca-bundle.crt
+          value: $(params.GIT_REVISION)
         - name: deleteExisting
           value: 'true'
-        - name: verbose
-          value: 'true'
-        - name: gitInitImage
-          value: >-
-            registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:2b4c4958cabdceffefef68940608f2c7e6774c0b94ba3eb49fa1b9ff0b544e8c
-        - name: userHome
-          value: /tekton/home
       taskRef:
         kind: ClusterTask
         name: git-clone
       workspaces:
         - name: output
-          workspace: main-workspace
-    - name: maven
-      params:
-        - name: MAVEN_IMAGE
-          value: >-
-            image-registry.openshift-image-registry.svc:5000/openshift/java:latest
-        - name: GOALS
-          value:
-            - package
-        - name: PROXY_PROTOCOL
-          value: http
-        - name: CONTEXT_DIR
-          value: undertow-servlet
-      runAfter:
-        - generate-and-push-container-image
-      taskRef:
-        kind: ClusterTask
-        name: maven
-      workspaces:
-        - name: source
-          workspace: main-workspace
-        - name: maven-settings
-          workspace: main-workspace
-    - name: generate-and-push-container-image
+          workspace: workspace
+    - name: build
       params:
         - name: IMAGE
-          value: undertow-servlet
-        - name: BUILDER_IMAGE
-          value: >-
-            registry.redhat.io/rhel8/buildah@sha256:ac0b8714cc260c94435cab46fe41b3de0ccbc3d93e38c395fa9d52ac49e521fe
-        - name: STORAGE_DRIVER
-          value: vfs
-        - name: DOCKERFILE
-          value: ./Dockerfile
-        - name: CONTEXT
-          value: undertow-servlet
+          value: '$(params.QUAY_REPO_URL):latest'
         - name: TLSVERIFY
-          value: 'true'
-        - name: FORMAT
-          value: oci
-        - name: SKIP_PUSH
           value: 'false'
+        - name: PATH_CONTEXT
+          value: $(params.PATH_CONTEXT)
+        - name: VERSION
+          value: $(params.VERSION)
       runAfter:
-        - git-clone
+        - fetch-repository
       taskRef:
         kind: ClusterTask
-        name: buildah
+        name: s2i-java
       workspaces:
         - name: source
-          workspace: main-workspace
+          workspace: workspace
+        - name: dockerconfig
+          workspace: quay-robot-secret
+    - name: deploy
+      params:
+        - name: SCRIPT
+          value: oc rollout status deploy/$(params.APP_NAME)
+      runAfter:
+        - build
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
   workspaces:
-    - name: main-workspace
+    - name: workspace
+    - name: quay-robot-secret
