@@ -22,7 +22,7 @@ spec:
     - default: openjdk-17-ubi8
       name: VERSION
       type: string
-    - default: 'https://quay.io/gdesouza/java-sample'
+    - default: 'quay.io/gdesouza/java-sample'
       name: QUAY_REPO_URL
       type: string
   tasks:
@@ -43,7 +43,7 @@ spec:
     - name: build
       params:
         - name: IMAGE
-          value: '$(params.QUAY_REPO_URL):latest'
+          value: $(params.IMAGE_NAME)
         - name: TLSVERIFY
           value: 'false'
         - name: PATH_CONTEXT
