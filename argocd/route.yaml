@@ -5,7 +5,6 @@ metadata:
   labels:
     app.kubernetes.io/instance: java-app-configs
 spec:
-  host: java-app
   to:
     kind: Service
     name: app-service
