@@ -1,0 +1,23 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: app-route
+  labels:
+    app.kubernetes.io/instance: java-app-configs
+spec:
+  host: java-app
+  to:
+    kind: Service
+    name: app-service
+    weight: 100
+  port:
+    targetPort: 8080-tcp
+  wildcardPolicy: None
+status:
+  ingress:
+    - host: java-app
+      routerName: default
+      conditions:
+        - type: Admitted
+          status: 'True'
+      wildcardPolicy: None
