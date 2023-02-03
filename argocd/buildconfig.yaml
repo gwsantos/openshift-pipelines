@@ -1,63 +1,7 @@
 kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
-  annotations:
-    app.openshift.io/vcs-ref: ''
-    app.openshift.io/vcs-uri: 'https://github.com/gwsantos/openshift-quickstarts.git'
-    openshift.io/generated-by: OpenShiftWebConsole
-  resourceVersion: '310202'
-  name: java-sample
-  uid: 25da02e4-e404-4d74-81d2-b181a7b9b01f
-  creationTimestamp: '2023-02-02T15:23:36Z'
-  generation: 5
-  managedFields:
-    - manager: Go-http-client
-      operation: Update
-      apiVersion: build.openshift.io/v1
-      time: '2023-02-02T15:23:36Z'
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:status':
-          'f:imageChangeTriggers': {}
-          'f:lastVersion': {}
-    - manager: Mozilla
-      operation: Update
-      apiVersion: build.openshift.io/v1
-      time: '2023-02-02T15:23:36Z'
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:annotations':
-            .: {}
-            'f:app.openshift.io/vcs-ref': {}
-            'f:app.openshift.io/vcs-uri': {}
-            'f:openshift.io/generated-by': {}
-          'f:labels':
-            .: {}
-            'f:app': {}
-            'f:app.kubernetes.io/component': {}
-            'f:app.kubernetes.io/instance': {}
-            'f:app.kubernetes.io/name': {}
-            'f:app.kubernetes.io/part-of': {}
-            'f:app.openshift.io/runtime': {}
-            'f:app.openshift.io/runtime-version': {}
-        'f:spec':
-          'f:output':
-            'f:to': {}
-          'f:runPolicy': {}
-          'f:source':
-            'f:contextDir': {}
-            'f:git':
-              .: {}
-              'f:uri': {}
-            'f:type': {}
-          'f:strategy':
-            'f:sourceStrategy':
-              .: {}
-              'f:from': {}
-            'f:type': {}
-          'f:triggers': {}
-  namespace: test
+  name: java-build
   labels:
     app: java-sample
     app.kubernetes.io/component: java-sample
