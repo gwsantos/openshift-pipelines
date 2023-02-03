@@ -1,2 +1,2 @@
-.tekton/storage
-.tekton/storage/*
+/tekton/storage
+/tekton/storage/*
