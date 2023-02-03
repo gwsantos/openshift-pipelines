@@ -1,2 +1,3 @@
 /tekton/storage
 /tekton/storage/*
+/argocd/*.txt
