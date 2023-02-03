@@ -10,14 +10,14 @@ spec:
   - default: https://github.com/gwsantos/openshift-quickstarts.git
     name: GIT_REPO
     type: string
-  - default: master
+  - default: main
     name: GIT_REVISION
     type: string
   - default: >-
         image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/$(params.APP_NAME):latest
     name: IMAGE_NAME
     type: string
-  - default: undertow-servlet
+  - default: 
     name: PATH_CONTEXT
     type: string
   - default: openjdk-17-ubi8
