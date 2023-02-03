@@ -1,8 +1,6 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  creationTimestamp: '2023-02-02T20:09:27Z'
-  generation: 6
   labels:
     app.kubernetes.io/instance: java-app
     app.kubernetes.io/name: java-app
@@ -10,32 +8,7 @@ metadata:
     pipeline.openshift.io/runtime: java
     pipeline.openshift.io/runtime-version: openjdk-17-ubi8
     pipeline.openshift.io/type: kubernetes
-  managedFields:
-    - apiVersion: tekton.dev/v1beta1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:labels':
-            .: {}
-            'f:app.kubernetes.io/instance': {}
-            'f:app.kubernetes.io/name': {}
-            'f:operator.tekton.dev/operand-name': {}
-            'f:pipeline.openshift.io/runtime': {}
-            'f:pipeline.openshift.io/runtime-version': {}
-            'f:pipeline.openshift.io/type': {}
-        'f:spec':
-          .: {}
-          'f:finally': {}
-          'f:params': {}
-          'f:resources': {}
-          'f:tasks': {}
-          'f:workspaces': {}
-      manager: Mozilla
-      operation: Update
-      time: '2023-02-02T20:34:38Z'
   name: java-app
-  resourceVersion: '60639'
-  uid: bca4c9b6-00e9-40b8-bfd6-5178f7421d9a
 spec:
   params:
     - default: java-app
