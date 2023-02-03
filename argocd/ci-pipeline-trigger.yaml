@@ -1,0 +1,44 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: ci-pipeline-trigger
+spec:
+  params:
+    - name: git-repo-url
+    - name: git-revision
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: ci-pipeline-
+      spec:
+        params:
+          - name: git-source-url
+            value: 'https://github.com/gwsantos/openshift-quickstarts.git'
+          - name: git-source-revision
+            value: master
+          - name: SONAR_URL
+            value: 'https://sonarcloud.io'
+          - name: SONAR_AUTH_TOKEN
+            value: e7b1de92c0d31ed392b889a9a84799deacfb8dd5
+          - name: LOCAL_SCAN_PATH
+            value: ./
+          - name: LOCAL_IMAGE_SCAN_PATH
+            value: ./
+          - name: REMOTE_IMAGE_URL
+            value: >-
+              image-registry.openshift-image-registry.svc:5000/java-app/java-app
+          - name: SEVERITY_LEVELS
+            value: CRITICAL
+          - name: KUSTOMIZE_GIT_URL
+            value: 'https://github.com/gwsantos/openshift-pipelines.git'
+          - name: KUSTOMIZE_GIT_CONTEXT_DIR
+            value: tekton/pipelines
+        pipelineRef:
+          name: template-pipeline
+        workspaces:
+          - name: app-source
+          - name: maven-settings
+          - name: shared-image-repo
+          - emptyDir: {}
+            name: kustomize-repo
