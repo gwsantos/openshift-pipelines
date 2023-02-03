@@ -1,13 +1,6 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  labels:
-    app.kubernetes.io/instance: java-app
-    app.kubernetes.io/name: java-app
-    operator.tekton.dev/operand-name: openshift-pipelines-addons
-    pipeline.openshift.io/runtime: java
-    pipeline.openshift.io/runtime-version: openjdk-17-ubi8
-    pipeline.openshift.io/type: kubernetes
   name: java-app
 spec:
   params:
@@ -66,7 +59,7 @@ spec:
         - name: source
           workspace: workspace
         - name: dockerconfig
-          workspace: quay-robot-secret
+          workspace: workspace
     - name: deploy
       params:
         - name: SCRIPT
@@ -78,4 +71,3 @@ spec:
         name: openshift-client
   workspaces:
     - name: workspace
-    - name: quay-robot-secret

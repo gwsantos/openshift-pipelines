@@ -4,7 +4,7 @@ metadata:
     name: argo-application
 spec:
     destination:
-        namespace: test
+        namespace: java-app
         server: 'https://kubernetes.default.svc'
     source:
         path: .
