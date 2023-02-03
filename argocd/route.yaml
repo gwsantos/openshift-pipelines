@@ -5,8 +5,8 @@ metadata:
   labels:
     app.kubernetes.io/instance: java-app-configs
 spec:
+  host: java-app.apps.cloud.techzone.ibm.com
   to:
-    host: java-app.apps.cloud.techzone.ibm.com
     kind: Service
     name: app-service
     weight: 100
