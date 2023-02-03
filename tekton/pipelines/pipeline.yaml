@@ -4,7 +4,7 @@ metadata:
   name: template-pipeline
 spec:
   params:
-  - default: $(context.pipelineRun.namespace)
+  - default: java-app
     name: APP_NAME
     type: string
   - default: https://github.com/gwsantos/openshift-quickstarts.git
@@ -20,7 +20,7 @@ spec:
   - default: undertow-servlet
     name: PATH_CONTEXT
     type: string
-  - default:
+  - default: openjdk-17-ubi8
     name: VERSION
     type: string
   tasks:
