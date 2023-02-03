@@ -1,25 +1,71 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
-  name: ci-pipeline
+  name: template-pipeline
 spec:
-  resources:
-  - name: app-git
-    type: git
-  - name: app-image
-    type: image
+  params:
+  - default: $(context.pipelineRun.namespace)
+    name: APP_NAME
+    type: string
+  - default: https://github.com/gwsantos/openshift-quickstarts.git
+    name: GIT_REPO
+    type: string
+  - default: master
+    name: GIT_REVISION
+    type: string
+  - default: >-
+        image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/$(params.APP_NAME):latest
+    name: IMAGE_NAME
+    type: string
+  - default: undertow-servlet
+    name: PATH_CONTEXT
+    type: string
+  - default:
+    name: VERSION
+    type: string
   tasks:
-  - name: build-s2i
-    taskRef:
-      name: s2i-java-8
-      kind: ClusterTask
+  - name: fetch-repository
     params:
-      - name: TLSVERIFY
-        value: "false"
-    resources:
-      inputs:
-      - name: source
-        resource: app-git
-      outputs:
-      - name: image
-        resource: app-image
+      - name: url
+        value: $(params.GIT_REPO)
+      - name: revision
+        value: $(params.GIT_REVISION)
+      - name: subdirectory
+        value: ''
+      - name: deleteExisting
+        value: 'true'
+    taskRef:
+      kind: ClusterTask
+      name: git-clone
+    workspaces:
+      - name: output
+        workspace: workspace
+  - name: build
+    params:
+        - name: IMAGE
+          value: $(params.IMAGE_NAME)
+        - name: TLSVERIFY
+          value: 'false'
+        - name: PATH_CONTEXT
+          value: $(params.PATH_CONTEXT)
+        - name: VERSION
+          value: $(params.VERSION)
+    runAfter:
+    - fetch-repository
+    taskRef:
+      kind: ClusterTask
+      name: s2i-java
+    workspaces:
+    - name: source
+      workspace: workspace
+  - name: deploy
+    params:
+      - name: SCRIPT
+        value: oc rollout status deploy/app-deployment
+    runAfter:
+      - build
+    taskRef:
+      kind: ClusterTask
+      name: openshift-client
+  workspaces:
+  - name: workspace
