@@ -7,10 +7,10 @@ spec:
         namespace: test
         server: 'https://kubernetes.default.svc'
     source:
-        path: k8s/overlays/dev
+        path: .
         repoURL: 'https://github.com/gwsantos/openshift-pipelines.git'
         targetRevision: main
-    project: default
+    project: java
     syncPolicy:
         automated:
         prune: true
