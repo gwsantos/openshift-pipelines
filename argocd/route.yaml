@@ -6,17 +6,10 @@ metadata:
     app.kubernetes.io/instance: java-app-configs
 spec:
   to:
+    host: java-app.apps.cloud.techzone.ibm.com
     kind: Service
     name: app-service
     weight: 100
   port:
     targetPort: 8080-tcp
   wildcardPolicy: None
-status:
-  ingress:
-    - host: java-app
-      routerName: default
-      conditions:
-        - type: Admitted
-          status: 'True'
-      wildcardPolicy: None
