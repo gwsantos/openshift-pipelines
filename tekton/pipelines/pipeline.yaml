@@ -10,7 +10,7 @@ spec:
   - default: https://github.com/gwsantos/openshift-quickstarts.git
     name: GIT_REPO
     type: string
-  - default: main
+  - default: master
     name: GIT_REVISION
     type: string
   - default: >-
