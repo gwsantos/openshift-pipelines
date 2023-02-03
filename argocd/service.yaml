@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+spec:
+  clusterIP: 172.30.201.20
+  ipFamilies:
+    - IPv4
+  ports:
+    - name: 8080-tcp
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+    - name: 8443-tcp
+      protocol: TCP
+      port: 8443
+      targetPort: 8443
+  internalTrafficPolicy: Cluster
+  clusterIPs:
+    - 172.30.201.20
+  type: ClusterIP
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+  selector:
+    app: java-app
+    deployment: app-deployment
