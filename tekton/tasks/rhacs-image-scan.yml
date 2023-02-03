@@ -2,7 +2,6 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: rhacs-image-scan
-  namespace: test
   labels:
     app.kubernetes.io/version: '3.71'
 spec:
