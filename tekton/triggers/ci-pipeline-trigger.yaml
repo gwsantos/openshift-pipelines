@@ -38,13 +38,3 @@ spec:
         status: null
         workspaces:
           - name: workspace
-            volumeClaimTemplate:
-              metadata:
-                labels:
-                  tekton.dev/pipeline: java-pipeline
-              spec:
-                accessModes:
-                  - ReadWriteOnce
-                resources:
-                  requests:
-                    storage: 1Gi
