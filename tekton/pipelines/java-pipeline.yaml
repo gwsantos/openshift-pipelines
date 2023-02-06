@@ -43,6 +43,31 @@ spec:
     workspaces:
       - name: output
         workspace: workspace
+  - name: sonarqube-scanner
+    params:
+      - name: PROJECT_VERSION
+        value: '1.0'
+      - name: SOURCE_TO_SCAN
+        value: .
+      - name: SONAR_SCANNER_IMAGE
+        value: >-
+          docker.io/sonarsource/sonar-scanner-cli:4.6@sha256:7a976330a8bad1beca6584c1c118e946e7a25fdc5b664d5c0a869a6577d81b4f
+      - name: SONAR_LOGIN_KEY
+        value: login
+      - name: SONAR_PASSWORD_KEY
+        value: password
+    runAfter:
+        - fetch-repository
+    taskRef:
+      kind: Task
+      name: sonarqube-scanner
+    workspaces:
+        - name: source
+          workspace: workspace
+        - name: sonar-settings
+          workspace: sonar-settings
+        - name: sonar-credentials
+          workspace: sonar-credentials
   - name: build
     taskRef:
       kind: ClusterTask
@@ -53,7 +78,7 @@ spec:
       - name: VERSION
         value: latest
     runAfter:
-    - fetch-repository
+    - sonarqube-scanner
     workspaces: []
   - name: deploy
     params:
@@ -65,4 +90,6 @@ spec:
       kind: ClusterTask
       name: openshift-client
   workspaces:
-  - name: workspace
+    - name: workspace
+    - name: sonar-credentials
+    - name: sonar-settings
