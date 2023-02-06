@@ -79,7 +79,6 @@ spec:
         value: latest
     runAfter:
     - sonarqube-scanner
-    workspaces: []
   - name: deploy
     params:
       - name: SCRIPT
