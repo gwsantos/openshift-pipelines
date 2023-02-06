@@ -44,23 +44,17 @@ spec:
       - name: output
         workspace: workspace
   - name: build
-    params:
-        - name: IMAGE
-          value: $(params.IMAGE_NAME)
-        - name: TLSVERIFY
-          value: 'false'
-        - name: PATH_CONTEXT
-          value: $(params.PATH_CONTEXT)
-        - name: VERSION
-          value: $(params.VERSION)
-    runAfter:
-    - fetch-repository
     taskRef:
       kind: ClusterTask
-      name: s2i-java
-    workspaces:
-    - name: source
-      workspace: workspace
+      name: openshift-client
+    params:
+      - name: SCRIPT
+        value: oc start-build bc/$(params.APP_NAME)
+      - name: VERSION
+        value: latest
+    runAfter:
+    - fetch-repository
+    workspaces: []
   - name: deploy
     params:
       - name: SCRIPT
