@@ -41,7 +41,7 @@ spec:
             volumeClaimTemplate:
               metadata:
                 labels:
-                  tekton.dev/pipeline: openshift-quickstarts-git
+                  tekton.dev/pipeline: java-pipeline
               spec:
                 accessModes:
                   - ReadWriteOnce
