@@ -58,7 +58,7 @@ spec:
   - name: deploy
     params:
       - name: SCRIPT
-        value: oc rollout status deploy/$(params.DEPLOYMENT_NAME)
+        value: oc rollout status dc/$(params.DEPLOYMENT_NAME)
     runAfter:
       - build
     taskRef:
