@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
-  name: template-pipeline
+  name: java-pipeline
 spec:
   params:
   - default: java-app
@@ -14,7 +14,7 @@ spec:
     name: GIT_REVISION
     type: string
   - default: >-
-        image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/$(params.APP_NAME):latest
+        image-registry.openshift-image-registry.svc:5000/java-pipeline/$(params.APP_NAME):latest
     name: IMAGE_NAME
     type: string
   - default: 
@@ -61,7 +61,7 @@ spec:
   - name: deploy
     params:
       - name: SCRIPT
-        value: oc rollout status deploy/app-deployment
+        value: oc rollout status deploy/java-app
     runAfter:
       - build
     taskRef:
