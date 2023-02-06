@@ -17,7 +17,7 @@ spec:
     name: DEPLOYMENT_NAME
     type: string
   - default: >-
-        image-registry.openshift-image-registry.svc:5000/java-pipeline/$(params.APP_NAME):latest
+        image-registry.openshift-image-registry.svc:5000/java-pipeline/java-app:latest
     name: IMAGE_NAME
     type: string
   - default: 
