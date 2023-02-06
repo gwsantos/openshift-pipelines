@@ -10,6 +10,6 @@ spec:
     - bindings:
         - kind: TriggerBinding
           ref: pipeline-trigger-binding
-      name: template-pipeline
+      name: java-pipeline
       template:
         ref: ci-pipeline-trigger
