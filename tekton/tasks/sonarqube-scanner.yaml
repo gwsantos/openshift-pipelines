@@ -51,25 +51,7 @@ spec:
       name: SONAR_PASSWORD_KEY
       type: string
   steps:
-    - env:
-        - name: SONAR_HOST_URL
-          value: $(params.SONAR_HOST_URL)
-        - name: SONAR_PROJECT_KEY
-          value: $(params.SONAR_PROJECT_KEY)
-        - name: PROJECT_VERSION
-          value: $(params.PROJECT_VERSION)
-        - name: SOURCE_TO_SCAN
-          value: $(params.SOURCE_TO_SCAN)
-        - name: SONAR_ORGANIZATION
-          value: $(params.SONAR_ORGANIZATION)
-        - name: SONAR_JAVA_BINARIES
-          value: ../target/classes
-        - name: SONAR_LOGIN
-          valueFrom:
-            secretKeyRef:
-              name: sonarcloud-token
-              key: SONAR_LOGIN
-              #e7b1de92c0d31ed392b889a9a84799deacfb8dd5
+    - env: []
       image: 'registry.access.redhat.com/ubi8/ubi-minimal:8.2'
       name: sonar-properties-create
       resources: {}
