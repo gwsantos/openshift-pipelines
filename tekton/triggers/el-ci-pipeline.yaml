@@ -1,0 +1,25 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: el-ci-pipeline
+  labels:
+    app.kubernetes.io/instance: java-pipeline-triggers
+    app.kubernetes.io/managed-by: EventListener
+    app.kubernetes.io/part-of: Triggers
+    eventlistener: ci-pipeline
+spec:
+  host: el-ci-pipeline-java-pipeline.svc.cluster.local:8080
+  to:
+    kind: Service
+    name: el-ci-pipeline
+    weight: 100
+  port:
+    targetPort: http-listener
+  wildcardPolicy: None
+status:
+  ingress:
+    - host: >-
+        el-ci-pipeline-java-pipeline.svc.cluster.local:8080
+      routerName: default
+      wildcardPolicy: None
+      routerCanonicalHostname: router-default.apps.ocp-661003jg2h-k5n7.cloud.techzone.ibm.com
