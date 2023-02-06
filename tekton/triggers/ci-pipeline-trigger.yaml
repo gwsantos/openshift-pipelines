@@ -2,10 +2,16 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
   name: ci-pipeline-trigger
+  labels:
+    app.kubernetes.io/instance: java-pipeline-triggers
 spec:
   params:
-    - name: git-repo-url
     - name: git-revision
+    - name: git-commit-message
+    - name: git-repo-url
+    - name: git-repo-name
+    - name: content-type
+    - name: pusher-name
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
@@ -13,24 +19,32 @@ spec:
         generateName: ci-pipeline-
       spec:
         params:
-          - name: git-source-url
+          - name: APP_NAME
+            value: java-app
+          - name: GIT_REPO
             value: 'https://github.com/gwsantos/openshift-quickstarts.git'
-          - name: git-source-revision
+          - name: GIT_REVISION
             value: master
-          - name: SONAR_URL
-            value: 'https://sonarcloud.io'
-          - name: SONAR_AUTH_TOKEN
-            value: e7b1de92c0d31ed392b889a9a84799deacfb8dd5
-          - name: LOCAL_SCAN_PATH
-            value: ./
-          - name: LOCAL_IMAGE_SCAN_PATH
-            value: ./
-          - name: REMOTE_IMAGE_URL
+          - name: IMAGE_NAME
             value: >-
               image-registry.openshift-image-registry.svc:5000/java-pipeline/java-app
+          - name: PATH_CONTEXT
+            value: .
+          - name: VERSION
+            value: openjdk-17-ubi8
         pipelineRef:
           name: java-pipeline
+        resources: []
+        status: null
         workspaces:
-          - name: app-source
-          - name: maven-settings
-          - name: shared-image-repo
+          - name: workspace
+            volumeClaimTemplate:
+              metadata:
+                labels:
+                  tekton.dev/pipeline: openshift-quickstarts-git
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 1Gi
