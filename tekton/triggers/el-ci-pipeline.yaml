@@ -4,7 +4,6 @@ metadata:
   name: el-ci-pipeline
 spec:
   namespaceSelector: {}
-  podTemplate: {}
   resources: {}
   serviceAccountName: pipeline
   triggers:
