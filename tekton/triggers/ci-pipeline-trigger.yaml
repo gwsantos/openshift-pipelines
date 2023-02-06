@@ -27,18 +27,10 @@ spec:
             value: ./
           - name: REMOTE_IMAGE_URL
             value: >-
-              image-registry.openshift-image-registry.svc:5000/java-app/java-app
-          - name: SEVERITY_LEVELS
-            value: CRITICAL
-          - name: KUSTOMIZE_GIT_URL
-            value: 'https://github.com/gwsantos/openshift-pipelines.git'
-          - name: KUSTOMIZE_GIT_CONTEXT_DIR
-            value: tekton/pipelines
+              image-registry.openshift-image-registry.svc:5000/java-pipeline/java-app
         pipelineRef:
-          name: template-pipeline
+          name: java-pipeline
         workspaces:
           - name: app-source
           - name: maven-settings
           - name: shared-image-repo
-          - emptyDir: {}
-            name: kustomize-repo
