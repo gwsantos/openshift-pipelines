@@ -20,7 +20,7 @@ spec:
         image-registry.openshift-image-registry.svc:5000/java-pipeline/java-app:latest
     name: IMAGE_NAME
     type: string
-  - default: 
+  - default: .
     name: PATH_CONTEXT
     type: string
   - default: openjdk-17-ubi8
