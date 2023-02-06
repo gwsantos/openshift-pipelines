@@ -13,6 +13,9 @@ spec:
   - default: master
     name: GIT_REVISION
     type: string
+  - default: java-app
+    name: DEPLOYMENT_NAME
+    type: string
   - default: >-
         image-registry.openshift-image-registry.svc:5000/java-pipeline/$(params.APP_NAME):latest
     name: IMAGE_NAME
@@ -61,7 +64,7 @@ spec:
   - name: deploy
     params:
       - name: SCRIPT
-        value: oc rollout status deploy/java-app
+        value: oc rollout status deploy/$(params.DEPLOYMENT_NAME)
     runAfter:
       - build
     taskRef:
