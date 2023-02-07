@@ -70,6 +70,11 @@ spec:
           value: $(params.SOURCE_TO_SCAN)
         - name: SONAR_ORGANIZATION
           value: $(params.SONAR_ORGANIZATION)
+        - name: SONAR_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: sonarcloud-token
+              key: SONAR_TOKEN
       script: |
         #!/usr/bin/env bash
 
