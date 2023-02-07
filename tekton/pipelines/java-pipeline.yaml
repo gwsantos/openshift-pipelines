@@ -77,8 +77,6 @@ spec:
           workspace: workspace
         - name: sonar-settings
           workspace: sonar-settings
-        - name: sonar-credentials
-          workspace: sonar-credentials
   - name: deploy
     params:
       - name: SCRIPT
@@ -90,5 +88,4 @@ spec:
       name: openshift-client
   workspaces:
     - name: workspace
-    - name: sonar-credentials
     - name: sonar-settings
