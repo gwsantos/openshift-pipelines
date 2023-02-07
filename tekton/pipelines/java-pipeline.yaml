@@ -63,10 +63,6 @@ spec:
       - name: SONAR_SCANNER_IMAGE
         value: >-
           docker.io/sonarsource/sonar-scanner-cli:4.6@sha256:7a976330a8bad1beca6584c1c118e946e7a25fdc5b664d5c0a869a6577d81b4f
-      - name: SONAR_LOGIN_KEY
-        value: login
-      - name: SONAR_PASSWORD_KEY
-        value: password
     runAfter:
         - build
     taskRef:
