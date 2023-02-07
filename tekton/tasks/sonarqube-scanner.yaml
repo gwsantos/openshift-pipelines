@@ -51,7 +51,7 @@ spec:
       default: "docker.io/sonarsource/sonar-scanner-cli:4.6@sha256:7a976330a8bad1beca6584c1c118e946e7a25fdc5b664d5c0a869a6577d81b4f"
     - name: SONAR_LOGIN_KEY
       description: Name of the file of the login within the sonarqube credentials workspace
-      default: "SONAR_TOKEN"
+      default: ""
     - name: SONAR_PASSWORD_KEY
       description: Name of the file of the password within the sonarqube credentials workspace
       default: "password"
@@ -71,7 +71,7 @@ spec:
         - name: SONAR_ORGANIZATION
           value: $(params.SONAR_ORGANIZATION)
         - name: SONAR_TOKEN
-          valueFrom:
+          value:
             secretKeyRef:
               name: sonarcloud-token
               key: SONAR_TOKEN
@@ -154,6 +154,9 @@ spec:
             SONAR_LOGIN=`cat $(workspaces.sonar-credentials.path)/$(params.SONAR_LOGIN_KEY)`
             replaceValues $(workspaces.source.path)/sonar-project.properties sonar.login "${SONAR_LOGIN}"
           fi
+        else
+            SONAR_LOGIN=${SONAR_TOKEN}
+            replaceValues $(workspaces.source.path)/sonar-project.properties sonar.login "${SONAR_LOGIN}"
         fi
     - name: sonar-scan
       image: $(params.SONAR_SCANNER_IMAGE)
