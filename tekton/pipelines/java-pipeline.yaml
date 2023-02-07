@@ -43,6 +43,17 @@ spec:
     workspaces:
       - name: output
         workspace: workspace
+  - name: build
+    taskRef:
+      kind: ClusterTask
+      name: openshift-client
+    params:
+      - name: SCRIPT
+        value: oc start-build bc/$(params.APP_NAME)
+      - name: VERSION
+        value: latest
+    runAfter:
+    - fetch-repository
   - name: sonarqube-scanner
     params:
       - name: PROJECT_VERSION
@@ -57,7 +68,7 @@ spec:
       - name: SONAR_PASSWORD_KEY
         value: password
     runAfter:
-        - fetch-repository
+        - build
     taskRef:
       kind: Task
       name: sonarqube-scanner
@@ -68,23 +79,12 @@ spec:
           workspace: sonar-settings
         - name: sonar-credentials
           workspace: sonar-credentials
-  - name: build
-    taskRef:
-      kind: ClusterTask
-      name: openshift-client
-    params:
-      - name: SCRIPT
-        value: oc start-build bc/$(params.APP_NAME)
-      - name: VERSION
-        value: latest
-    runAfter:
-    - sonarqube-scanner
   - name: deploy
     params:
       - name: SCRIPT
         value: oc rollout status dc/$(params.DEPLOYMENT_NAME)
     runAfter:
-      - build
+      - sonarqube-scanner
     taskRef:
       kind: ClusterTask
       name: openshift-client
