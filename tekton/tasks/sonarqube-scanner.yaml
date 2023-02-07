@@ -64,12 +64,11 @@ spec:
           value: $(params.SONAR_ORGANIZATION)
         - name: SONAR_JAVA_BINARIES
           value: ../target/classes
-        - name: SONAR_LOGIN
+        - name: SONAR_TOKEN
           valueFrom:
             secretKeyRef:
               name: sonarcloud-token
-              key: SONAR_LOGIN
-              #e7b1de92c0d31ed392b889a9a84799deacfb8dd5
+              key: SONAR_TOKEN
       image: 'registry.access.redhat.com/ubi8/ubi-minimal:8.2'
       name: sonar-properties-create
       resources: {}
