@@ -71,7 +71,7 @@ spec:
         - name: SONAR_ORGANIZATION
           value: $(params.SONAR_ORGANIZATION)
         - name: SONAR_TOKEN
-          value:
+          valueFrom:
             secretKeyRef:
               name: sonarcloud-token
               key: SONAR_TOKEN
