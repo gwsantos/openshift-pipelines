@@ -155,7 +155,7 @@ spec:
             replaceValues $(workspaces.source.path)/sonar-project.properties sonar.login "${SONAR_LOGIN}"
           fi
         else
-            SONAR_LOGIN=${SONAR_TOKEN}
+            SONAR_LOGIN="${SONAR_TOKEN}"
             replaceValues $(workspaces.source.path)/sonar-project.properties sonar.login "${SONAR_LOGIN}"
         fi
     - name: sonar-scan
