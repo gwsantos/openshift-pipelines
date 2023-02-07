@@ -134,15 +134,11 @@ spec:
           echo "---------------------------"
           cat $(workspaces.source.path)/sonar-project.properties
         fi
+        
+        replaceValues $(workspaces.source.path)/sonar-project.properties sonar.login "${SONAR_TOKEN}"
+        
     - name: sonar-scan
       image: $(params.SONAR_SCANNER_IMAGE)
       workingDir: $(workspaces.source.path)
       command:
-        - sonar-scanner \
-          -Dsonar.login=${SONAR_TOKEN} \
-          -Dsonar.host.url=${SONAR_HOST_URL} \
-          -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-          -Dsonar.java.binaries=${SONARQUBE_JAVA_BINARIES_PATH} \
-          -Dsonar.organization=${SONAR_ORGANIZATION} \
-          -Dsonar.sources=. \
-          -Dsonar.java.binaries=.
+        - sonar-scanner
