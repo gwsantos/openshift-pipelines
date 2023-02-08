@@ -6,35 +6,34 @@ metadata:
     app.kubernetes.io/instance: java-pipeline-triggers
 spec:
   params:
-    - name: git-revision
-    - name: git-commit-message
-    - name: git-repo-url
-    - name: git-repo-name
-    - name: content-type
-    - name: pusher-name
+  - name: gitrevision
+    description: The git revision
+    default: master
+  - name: gitrepositoryurl
+    description: The git repository url
+  - name: message
+    description: The message to print
+    default: This is the default message
+  - name: contenttype
+    description: The Content-Type of the event
   resourcetemplates:
-    - apiVersion: tekton.dev/v1beta1
-      kind: PipelineRun
-      metadata:
-        generateName: ci-pipeline-
-      spec:
-        params:
-          - name: APP_NAME
-            value: java-app
-          - name: GIT_REPO
-            value: 'https://github.com/gwsantos/openshift-quickstarts.git'
-          - name: GIT_REVISION
-            value: master
-          - name: IMAGE_NAME
-            value: >-
-              image-registry.openshift-image-registry.svc:5000/java-pipeline/java-app
-          - name: PATH_CONTEXT
-            value: .
-          - name: VERSION
-            value: openjdk-17-ubi8
-        pipelineRef:
-          name: java-pipeline
-        resources: []
-        status: null
-        workspaces:
-          - name: workspace
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      generateName: java-pipeline-run-
+    spec:
+      pipelineRef:
+        name: java-pipeline
+      params:
+      - name: message
+        value: $(tt.params.message)
+      - name: contenttype
+        value: $(tt.params.contenttype)
+      - name: git-revision
+        value: $(tt.params.gitrevision)
+      - name: git-url
+        value: $(tt.params.gitrepositoryurl)
+      workspaces:
+      - name: git-source
+        persistentVolumeClaim:
+          claimName: pvc-java-pipeline
