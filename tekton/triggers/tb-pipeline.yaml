@@ -4,9 +4,9 @@ metadata:
   name: tb-pipeline
 spec:
   params:
-  - name: gitrevision
+  - name: git-revision
     value: $(body.head_commit.id)
-  - name: gitrepositoryurl
+  - name: git-repo-url
     value: $(body.repository.url)
-  - name: contenttype
+  - name: content-type
     value: $(header.Content-Type)
