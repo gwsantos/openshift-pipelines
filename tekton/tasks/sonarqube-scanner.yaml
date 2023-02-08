@@ -63,7 +63,7 @@ spec:
         - name: SONAR_TOKEN
           valueFrom:
             secretKeyRef:
-              name: sonarcloud-token
+              name: sonar-token
               key: SONAR_TOKEN
       script: |
         #!/usr/bin/env bash
