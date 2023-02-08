@@ -2,6 +2,8 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
   name: tb-pipeline
+  labels:
+    app.kubernetes.io/instance: java-app
 spec:
   params:
   - name: git-revision
