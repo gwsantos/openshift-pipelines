@@ -1,12 +1,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: java-pipeline
+  name: java-pipeline #ArgoCD project name
   namespace: openshift-gitops
 spec:
   destinations:
     - name: in-cluster
-      namespace: java-pipeline
+      namespace: java-pipeline #OpenShift namespace
       server: 'https://kubernetes.default.svc'
   sourceRepos:
     - 'https://github.com/gwsantos/openshift-pipelines.git'
