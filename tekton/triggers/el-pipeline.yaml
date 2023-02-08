@@ -3,15 +3,11 @@ kind: EventListener
 metadata:
   name: el-pipeline
 spec:
-  namespaceSelector: {}
-  resources: {}
   serviceAccountName: pipeline
   triggers:
     - bindings:
         - kind: TriggerBinding
           ref: tb-pipeline
-        - kind: ClusterTriggerBinding
-          ref: github-push
-      name: java-pipeline
+      name: push-trigger
       template:
         ref: tt-pipeline
