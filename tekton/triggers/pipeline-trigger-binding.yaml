@@ -1,10 +1,12 @@
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
-  name: pipeline-trigger-binding
+  name: tb-pipeline
 spec:
   params:
-    - name: git-repo-url
-      value: $(body.repository.git_http_url)
-    - name: git-revision
-      value: $(body.after)
+  - name: gitrevision
+    value: $(body.head_commit.id)
+  - name: gitrepositoryurl
+    value: $(body.repository.url)
+  - name: contenttype
+    value: $(header.Content-Type)
