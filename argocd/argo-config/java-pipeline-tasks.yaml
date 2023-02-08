@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: java-pipeline-tasks
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: java-pipeline
+    server: 'https://kubernetes.default.svc'
+  project: java-pipeline
+  source:
+    path: tekton/tasks
+    repoURL: 'https://github.com/gwsantos/openshift-pipelines.git'
+    targetRevision: java-pipeline
+  syncPolicy: {}
+status: {}
