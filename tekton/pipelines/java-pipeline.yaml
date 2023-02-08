@@ -76,15 +76,6 @@ spec:
           workspace: workspace
         - name: sonar-settings
           workspace: sonar-settings
-  - name: deploy
-    params:
-      - name: SCRIPT
-        value: oc rollout status dc/$(params.DEPLOYMENT_NAME)
-    runAfter:
-      - sonarqube-scanner
-    taskRef:
-      kind: ClusterTask
-      name: openshift-client
   workspaces:
     - name: workspace
     - name: sonar-settings
