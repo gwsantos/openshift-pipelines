@@ -27,7 +27,7 @@ spec:
     - default: 'quay.io/stackrox-io/roxctl:3.71.0'
       description: Image providing the roxctl tool.
       name: rox_image
-    - default: $(params.image)
+    - default: $(params.IMAGE_NAME)
       description: >
         Full name of image to scan.
 

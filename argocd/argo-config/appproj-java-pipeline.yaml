@@ -1,0 +1,13 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: gustavo #ArgoCD project name
+  namespace: openshift-gitops
+spec:
+  destinations:
+    - name: in-cluster
+      namespace: java-pipeline #OpenShift namespace
+      server: 'https://kubernetes.default.svc'
+  sourceRepos:
+    - 'https://github.com/gwsantos/openshift-pipelines.git' #Git repo with all the yaml files (tekton/openshift)
+status: {}

@@ -1,0 +1,81 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: java-pipeline
+  labels:
+    app.kubernetes.io/instance: java-app
+    app.kubernetes.io/name: java-app
+spec:
+  params:
+  - default: java-app
+    name: APP_NAME
+    type: string
+  - default: https://github.com/gwsantos/openshift-quickstarts.git
+    name: GIT_REPO
+    type: string
+  - default: master
+    name: GIT_REVISION
+    type: string
+  - default: java-app
+    name: DEPLOYMENT_NAME
+    type: string
+  - default: >-
+        image-registry.openshift-image-registry.svc:5000/java-pipeline/java-app:latest
+    name: IMAGE_NAME
+    type: string
+  - default: .
+    name: PATH_CONTEXT
+    type: string
+  - default: openjdk-17-ubi8
+    name: VERSION
+    type: string
+  tasks:
+  - name: fetch-repository
+    params:
+      - name: url
+        value: $(params.GIT_REPO)
+      - name: revision
+        value: $(params.GIT_REVISION)
+      - name: subdirectory
+        value: ''
+      - name: deleteExisting
+        value: 'true'
+    taskRef:
+      kind: ClusterTask
+      name: git-clone
+    workspaces:
+      - name: output
+        workspace: workspace
+  - name: build
+    taskRef:
+      kind: ClusterTask
+      name: openshift-client
+    params:
+      - name: SCRIPT
+        value: oc start-build bc/$(params.APP_NAME) --wait
+      - name: VERSION
+        value: latest
+    runAfter:
+    - fetch-repository
+  - name: sonarqube-scanner
+    params:
+      - name: PROJECT_VERSION
+        value: '1.0'
+      - name: SOURCE_TO_SCAN
+        value: .
+      - name: SONAR_SCANNER_IMAGE
+        value: >-
+          docker.io/sonarsource/sonar-scanner-cli:4.6@sha256:7a976330a8bad1beca6584c1c118e946e7a25fdc5b664d5c0a869a6577d81b4f
+    runAfter:
+        - build
+    taskRef:
+      kind: Task
+      name: sonarqube-scanner
+    workspaces:
+        - name: source
+          workspace: workspace
+        - name: sonar-settings
+          workspace: sonar-settings
+  workspaces:
+    - name: workspace
+    - name: sonar-settings
