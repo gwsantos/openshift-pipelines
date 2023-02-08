@@ -1,0 +1,21 @@
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  annotations:
+    app.openshift.io/vcs-ref: master
+    app.openshift.io/vcs-uri: 'https://github.com/gwsantos/openshift-quickstarts.git'
+  name: is-quay
+  labels:
+    app: java-app
+    app.kubernetes.io/component: java-app
+    app.kubernetes.io/instance: java-app
+    app.kubernetes.io/name: java-app
+    app.kubernetes.io/part-of: java-app
+    app.openshift.io/runtime: java
+    app.openshift.io/runtime-version: openjdk-17-ubi8
+spec:
+  lookupPolicy:
+    local: false
+status:
+  dockerImageRepository: 'quay.io/gdesouza/java-app'
+  tags: []
