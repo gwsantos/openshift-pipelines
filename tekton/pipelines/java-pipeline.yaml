@@ -43,6 +43,17 @@ spec:
     workspaces:
       - name: output
         workspace: workspace
+  - name: build
+    taskRef:
+      kind: ClusterTask
+      name: openshift-client
+    params:
+      - name: SCRIPT
+        value: oc start-build bc/$(params.APP_NAME) --wait
+      - name: VERSION
+        value: latest
+    runAfter:
+    - fetch-repository
   - name: sonarqube-scanner
     params:
       - name: PROJECT_VERSION
@@ -52,12 +63,8 @@ spec:
       - name: SONAR_SCANNER_IMAGE
         value: >-
           docker.io/sonarsource/sonar-scanner-cli:4.6@sha256:7a976330a8bad1beca6584c1c118e946e7a25fdc5b664d5c0a869a6577d81b4f
-      - name: SONAR_LOGIN_KEY
-        value: login
-      - name: SONAR_PASSWORD_KEY
-        value: password
     runAfter:
-        - fetch-repository
+        - build
     taskRef:
       kind: Task
       name: sonarqube-scanner
@@ -66,29 +73,15 @@ spec:
           workspace: workspace
         - name: sonar-settings
           workspace: sonar-settings
-        - name: sonar-credentials
-          workspace: sonar-credentials
-  - name: build
-    taskRef:
-      kind: ClusterTask
-      name: openshift-client
-    params:
-      - name: SCRIPT
-        value: oc start-build bc/$(params.APP_NAME)
-      - name: VERSION
-        value: latest
-    runAfter:
-    - sonarqube-scanner
   - name: deploy
     params:
       - name: SCRIPT
         value: oc rollout status dc/$(params.DEPLOYMENT_NAME)
     runAfter:
-      - build
+      - sonarqube-scanner
     taskRef:
       kind: ClusterTask
       name: openshift-client
   workspaces:
     - name: workspace
-    - name: sonar-credentials
     - name: sonar-settings

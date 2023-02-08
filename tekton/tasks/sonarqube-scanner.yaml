@@ -26,10 +26,6 @@ spec:
     - name: sonar-settings
       description: "Optional workspace where SonarQube properties can be mounted"
       optional: true
-    - name: sonar-credentials
-      description: |
-        A workspace containing a login or password for use within sonarqube.
-      optional: true
   params:
     - name: SONAR_HOST_URL
       description: SonarQube server URL
@@ -49,12 +45,6 @@ spec:
     - name: SONAR_SCANNER_IMAGE
       description: "The sonarqube scanner CLI image which will run the scan"
       default: "docker.io/sonarsource/sonar-scanner-cli:4.6@sha256:7a976330a8bad1beca6584c1c118e946e7a25fdc5b664d5c0a869a6577d81b4f"
-    - name: SONAR_LOGIN_KEY
-      description: Name of the file of the login within the sonarqube credentials workspace
-      default: "SONAR_TOKEN"
-    - name: SONAR_PASSWORD_KEY
-      description: Name of the file of the password within the sonarqube credentials workspace
-      default: "password"
   steps:
     - name: sonar-properties-create
       image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
@@ -70,6 +60,11 @@ spec:
           value: $(params.SOURCE_TO_SCAN)
         - name: SONAR_ORGANIZATION
           value: $(params.SONAR_ORGANIZATION)
+        - name: SONAR_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: sonar-token
+              key: SONAR_TOKEN
       script: |
         #!/usr/bin/env bash
 
@@ -139,17 +134,9 @@ spec:
           echo "---------------------------"
           cat $(workspaces.source.path)/sonar-project.properties
         fi
-
-        if [[ "$(workspaces.sonar-credentials.bound)" == "true" ]]; then
-          if [[ -f $(workspaces.sonar-credentials.path)/$(params.SONAR_PASSWORD_KEY) ]]; then
-            SONAR_PASSWORD=`cat $(workspaces.sonar-credentials.path)/$(params.SONAR_PASSWORD_KEY)`
-            replaceValues $(workspaces.source.path)/sonar-project.properties sonar.password "${SONAR_PASSWORD}"
-          fi
-          if [[ -f $(workspaces.sonar-credentials.path)/$(params.SONAR_LOGIN_KEY) ]]; then
-            SONAR_LOGIN=`cat $(workspaces.sonar-credentials.path)/$(params.SONAR_LOGIN_KEY)`
-            replaceValues $(workspaces.source.path)/sonar-project.properties sonar.login "${SONAR_LOGIN}"
-          fi
-        fi
+        
+        replaceValues $(workspaces.source.path)/sonar-project.properties sonar.login "${SONAR_TOKEN}"
+        
     - name: sonar-scan
       image: $(params.SONAR_SCANNER_IMAGE)
       workingDir: $(workspaces.source.path)

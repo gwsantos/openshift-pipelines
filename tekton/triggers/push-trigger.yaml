@@ -1,0 +1,9 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: Trigger
+metadata:
+  name: push-trigger
+spec:
+  bindings:
+  - ref: tb-pipeline
+  template:
+    ref: tt-pipeline
