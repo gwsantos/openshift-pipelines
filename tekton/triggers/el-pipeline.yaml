@@ -1,7 +1,7 @@
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
-  name: ci-pipeline
+  name: el-pipeline
 spec:
   namespaceSelector: {}
   resources: {}
@@ -9,9 +9,9 @@ spec:
   triggers:
     - bindings:
         - kind: TriggerBinding
-          ref: pipeline-trigger-binding
+          ref: tb-pipeline
         - kind: ClusterTriggerBinding
           ref: github-push
       name: java-pipeline
       template:
-        ref: ci-pipeline-trigger
+        ref: tt-pipeline
