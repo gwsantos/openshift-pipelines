@@ -36,7 +36,8 @@ spec:
       type: string
   steps:
     - name: push-image
-      image: ''
+      image: quay.io/buildah/stable:latest
+      workingDir: $(workspaces.source.path)
       resources: {}
       script: >
         DOCKER_CONFIG="$(workspaces.dockerconfig.path)"
