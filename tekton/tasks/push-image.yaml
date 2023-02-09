@@ -36,6 +36,7 @@ spec:
       type: string
   steps:
     - name: push-image
+      image: ''
       resources: {}
       script: >
         DOCKER_CONFIG="$(workspaces.dockerconfig.path)"
