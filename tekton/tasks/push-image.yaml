@@ -1,0 +1,74 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  annotations:
+  name: push-image
+  labels:
+    app.kubernetes.io/version: '0.1'
+    operator.tekton.dev/operand-name: openshift-pipelines-addons
+    operator.tekton.dev/provider-type: redhat
+spec:
+  description: >-
+    This is a custom S2I builder task created by Red Hat and IBM. 
+    push-image task pushes an image from the internal registry to 
+    an external image repository using a .dockerconfigjson secret passed
+    to the pipeline using the "dockerconfig" workspace.
+  params:
+    - name: VERSION
+      description: The tag of java imagestream for java version      
+      type: string
+      default: latest
+    - name: TLSVERIFY
+      description: >-
+        Verify the TLS on the registry endpoint (for push/pull to a non-TLS
+        registry)
+      type: string
+      default: 'true'
+    - name: INTERNAL_IMAGE_URL 
+      description: Location of the internal repo where built image is.
+      type: string
+    - name: EXTERNAL_IMAGE_URL
+      description: URL of the external repo where image has to be pushed.
+      type: string
+  results:
+    - description: Digest of the image just built.
+      name: IMAGE_DIGEST
+      type: string
+  steps:
+    - name: push-image
+      resources: {}
+      script: >
+        DOCKER_CONFIG="$(workspaces.dockerconfig.path)"
+
+        buildah push --storage-driver=vfs --tls-verify=$(params.TLSVERIFY) \
+          --digestfile $(workspaces.source.path)/image-digest $(params.INTERNAL_IMAGE_URL) \
+          docker://$(params.EXTERNAL_IMAGE_URL)
+
+        cat $(workspaces.source.path)/image-digest | tee
+        /tekton/results/IMAGE_DIGEST
+      securityContext:
+        capabilities:
+          add:
+            - SETFCAP
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: varlibcontainers
+        - mountPath: /gen-source
+          name: gen-source
+      workingDir: /gen-source
+  volumes:
+    - emptyDir: {}
+      name: varlibcontainers
+    - emptyDir: {}
+      name: gen-source
+    - emptyDir: {}
+      name: env-vars
+  workspaces:
+    - mountPath: /workspace/source
+      name: source
+    - description: >-
+        An optional workspace that allows providing a .docker/config.json file
+        for Buildah to access the container registry. The file should be placed
+        at the root of the Workspace with name config.json.
+      name: dockerconfig
+      optional: true
