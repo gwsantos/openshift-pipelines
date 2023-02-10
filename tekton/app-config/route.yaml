@@ -2,9 +2,15 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   labels:
+    app: java-app
+    app.kubernetes.io/component: java-app
     app.kubernetes.io/instance: java-app
     app.kubernetes.io/name: java-app
     app.kubernetes.io/part-of: java-app
+    app.openshift.io/runtime: java
+    app.openshift.io/runtime-version: openjdk-17-ubi8
+  annotations:
+    openshift.io/host.generated: 'false'
   name: java-app-route
 spec:
   host: >-
@@ -15,5 +21,17 @@ spec:
     kind: Service
     name: java-app-service
     weight: 100
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
   wildcardPolicy: None
-status: {}
+status:
+  ingress:
+    - host: >-
+        java-app.apps.ocp-661003jg2h-0awt.cloud.techzone.ibm.com
+      routerName: default
+      conditions:
+        - type: Admitted
+          status: 'True'
+      wildcardPolicy: None
+      routerCanonicalHostname: router-default.apps.ocp-661003jg2h-0awt.cloud.techzone.ibm.com
