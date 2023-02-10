@@ -135,11 +135,6 @@ spec:
       taskRef:
         kind: ClusterTask
         name: openshift-client
-      workspaces:
-        - name: source
-          workspace: workspace
-        - name: maven-settings
-          workspace: workspace
   workspaces:
     - name: workspace
     - name: sonar-settings
