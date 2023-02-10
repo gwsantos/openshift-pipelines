@@ -19,4 +19,7 @@ spec:
   internalTrafficPolicy: Cluster
   selector:
     app: java-app
+    app.kubernetes.io/instance: java-app
+    app.kubernetes.io/name: java-app
+    app.kubernetes.io/part-of: java-app
     deployment: java-app
