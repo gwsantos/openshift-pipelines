@@ -34,7 +34,7 @@ spec:
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           imagePullPolicy: Always
-strategy:
+  strategy:
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 25%
