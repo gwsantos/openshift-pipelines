@@ -3,9 +3,13 @@ kind: Service
 metadata:
   name: java-app-service
   labels:
+    app: java-app
+    app.kubernetes.io/component: java-app
     app.kubernetes.io/instance: java-app
     app.kubernetes.io/name: java-app
     app.kubernetes.io/part-of: java-app
+    app.openshift.io/runtime: java
+    app.openshift.io/runtime-version: openjdk-17-ubi8
 spec:
   ports:
     - name: 8080-tcp
@@ -19,7 +23,4 @@ spec:
   internalTrafficPolicy: Cluster
   selector:
     app: java-app
-    app.kubernetes.io/instance: java-app
-    app.kubernetes.io/name: java-app
-    app.kubernetes.io/part-of: java-app
-    deployment: java-app
+    deploymentconfig: java-app
