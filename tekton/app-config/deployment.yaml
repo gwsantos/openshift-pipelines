@@ -3,22 +3,23 @@ kind: Deployment
 metadata:
   name: java-app
   labels:
+    app: java-app
+    app.kubernetes.io/component: java-app
     app.kubernetes.io/instance: java-app
     app.kubernetes.io/name: java-app
     app.kubernetes.io/part-of: java-app
+    app.openshift.io/runtime: java
+    app.openshift.io/runtime-version: openjdk-17-ubi8
 spec:
   selector:
     matchLabels:
       app: java-app
-      app.kubernetes.io/part-of: java-app
-      app.kubernetes.io/instance: java-app
   replicas: 1
   template:
     metadata:
       labels:
         app: java-app
-        app.kubernetes.io/part-of: java-app
-        app.kubernetes.io/instance: java-app
+        deploymentconfig: java-app
     spec:
       containers:
         - name: java-app
@@ -26,3 +27,17 @@ spec:
             image-registry.openshift-image-registry.svc:5000/java-pipeline/java-app:latest
           ports:
             - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8443
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
