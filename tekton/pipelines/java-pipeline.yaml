@@ -119,6 +119,17 @@ spec:
       taskRef:
         kind: ClusterTask
         name: maven
+    - name: deploy-to-cluster
+      params:
+        - name: SCRIPT
+          value: oc rollout status deploy/$(params.APP_NAME)
+        - name: VERSION
+          value: latest
+      runAfter:
+        - sonarqube-scanner
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
       workspaces:
         - name: source
           workspace: workspace
