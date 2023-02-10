@@ -31,6 +31,9 @@ spec:
   - default: latest
     name: IMAGE_TAG
     type: string
+  - default: quay.io/evalic/java-app
+    name: QUAY_REPO_URL
+    type: string
   tasks:
     - name: fetch-repository
       params:
