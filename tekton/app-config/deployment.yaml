@@ -5,15 +5,20 @@ metadata:
   labels:
     app.kubernetes.io/instance: java-app
     app.kubernetes.io/name: java-app
+    app.kubernetes.io/part-of: java-app
 spec:
   selector:
     matchLabels:
       app: java-app
+      app.kubernetes.io/part-of: java-app
+      app.kubernetes.io/instance: java-app
   replicas: 1
   template:
     metadata:
       labels:
         app: java-app
+        app.kubernetes.io/part-of: java-app
+        app.kubernetes.io/instance: java-app
     spec:
       containers:
         - name: java-app
