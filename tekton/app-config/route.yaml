@@ -4,7 +4,8 @@ metadata:
   labels:
     app.kubernetes.io/instance: java-app
     app.kubernetes.io/name: java-app
-  name: java-app-service
+    app.kubernetes.io/part-of: java-app
+  name: java-app-route
 spec:
   host: >-
     java-app.apps.ocp-661003jg2h-0awt.cloud.techzone.ibm.com
