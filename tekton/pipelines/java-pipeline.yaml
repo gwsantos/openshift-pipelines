@@ -135,6 +135,11 @@ spec:
       taskRef:
         kind: ClusterTask
         name: openshift-client
+      workspaces:
+        - name: manifest-dir
+          workspace: workspace
+        - name: kubeconfig-dir
+          workspace: workspace
   workspaces:
     - name: workspace
     - name: sonar-settings
