@@ -89,13 +89,37 @@ spec:
         - name: ENV_VARS
           value: []
       runAfter:
-        - fetch-repository
+        - unit-tests
       taskRef:
         kind: ClusterTask
         name: s2i-java
       workspaces:
         - name: source
           workspace: workspace
+    - name: unit-tests
+      params:
+        - name: MAVEN_IMAGE
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/openshift/java:latest
+        - name: GOALS
+          value:
+            - test
+        - name: PROXY_PROTOCOL
+          value: http
+        - name: CONTEXT_DIR
+          value: .
+      runAfter:
+        - fetch-repository
+      taskRef:
+        kind: ClusterTask
+        name: maven
+      workspaces:
+        - name: source
+          workspace: workspace
+        - name: maven-settings
+          workspace: workspace
   workspaces:
     - name: workspace
     - name: sonar-settings
+    - name: quay-dockerconfig
+      optional: true
