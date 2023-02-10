@@ -119,6 +119,11 @@ spec:
       taskRef:
         kind: ClusterTask
         name: maven
+      workspaces:
+        - name: source
+          workspace: workspace
+        - name: maven-settings
+          workspace: workspace
     - name: deploy-to-cluster
       params:
         - name: SCRIPT
