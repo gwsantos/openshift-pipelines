@@ -3,9 +3,10 @@ apiVersion: route.openshift.io/v1
 metadata:
   name: app-route
   labels:
-    app.kubernetes.io/instance: java-app-configs
+    app.kubernetes.io/instance: java-app
+    app.kubernetes.io/name: java-app
 spec:
-  host: java-app.apps.cloud.techzone.ibm.com
+  host: ''
   to:
     kind: Service
     name: app-service
