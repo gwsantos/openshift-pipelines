@@ -2,6 +2,12 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
   name: el-pipeline
+  labels:
+    app: java-app
+    app.kubernetes.io/component: java-app
+    app.kubernetes.io/instance: java-app
+    app.kubernetes.io/name: java-app
+    app.kubernetes.io/part-of: java-app
 spec:
   serviceAccountName: pipeline
   triggers:
