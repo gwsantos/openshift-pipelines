@@ -5,6 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/instance: java-app
     app.kubernetes.io/name: java-app
+    app.kubernetes.io/part-of: java-app
 spec:
   ports:
     - name: 8080-tcp
