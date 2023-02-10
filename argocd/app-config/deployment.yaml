@@ -2,6 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app-deployment
+  labels:
+    app.kubernetes.io/instance: java-app
+    app.kubernetes.io/name: java-app
 spec:
   selector:
     matchLabels:
