@@ -34,6 +34,10 @@ spec:
   - default: quay.io/evalic/java-app
     name: QUAY_REPO_URL
     type: string
+  - default: >-
+        http://nexus-sonatype-nexus-service-java-pipeline.apps.ocp-661003jg2h-0awt.cloud.techzone.ibm.com/repository/maven-central/
+    name: NEXUS_REPO_URL
+    type: string
   tasks:
     - name: fetch-repository
       params:
@@ -88,6 +92,8 @@ spec:
           value: 'true'
         - name: ENV_VARS
           value: []
+        - name: MAVEN_MIRROR_URL
+          value: $(params.NEXUS_REPO_URL)
       runAfter:
         - unit-tests
       taskRef:
