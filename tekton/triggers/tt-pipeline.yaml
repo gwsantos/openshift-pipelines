@@ -27,19 +27,37 @@ spec:
         namespace: java-pipeline
       spec:
         params:
-          - name: APP_NAME
-            value: java-app
-          - name: GIT_REPO
-            value: 'https://github.com/gwsantos/openshift-quickstarts.git'
-          - name: GIT_REVISION
-            value: master
-          - name: IMAGE_NAME
-            value: >-
-              image-registry.openshift-image-registry.svc:5000/java-pipeline/java-app
-          - name: PATH_CONTEXT
-            value: .
-          - name: VERSION
-            value: openjdk-17-ubi8
+          - default: java-app
+            name: APP_NAME
+            type: string
+          - default: 'https://github.com/gwsantos/openshift-quickstarts.git'
+            name: GIT_REPO
+            type: string
+          - default: master
+            name: GIT_REVISION
+            type: string
+          - default: java-app
+            name: DEPLOYMENT_NAME
+            type: string
+          - default: 'image-registry.openshift-image-registry.svc:5000/java-pipeline/java-app'
+            name: IMAGE_NAME
+            type: string
+          - default: .
+            name: PATH_CONTEXT
+            type: string
+          - default: openjdk-17-ubi8
+            name: VERSION
+            type: string
+          - default: latest
+            name: IMAGE_TAG
+            type: string
+          - default: quay.io/evalic/java-app
+            name: QUAY_REPO_URL
+            type: string
+          - default: >-
+                http://nexus-sonatype-nexus-service-java-pipeline.apps.ocp-661003jg2h-0awt.cloud.techzone.ibm.com/repository/maven-central/
+            name: NEXUS_REPO_URL
+            type: string
         pipelineRef:
           name: java-pipeline
         resources: []
@@ -48,3 +66,10 @@ spec:
           - name: workspace
             persistentVolumeClaim:
               claimName: pvc-pipeline
+          - name: sonar-settings
+            configmap:
+              sonar-settings
+          - name: quay-dockerconfig
+            secret:
+              secretName: quay-token
+            
