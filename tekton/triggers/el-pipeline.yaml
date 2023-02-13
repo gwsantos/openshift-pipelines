@@ -18,9 +18,5 @@ spec:
       template:
         ref: tt-pipeline
       interceptors:
-        - name: "validate GitHub payload and filter on eventType"
-          ref:
-            name: "github"
-          params:
-        - name: "eventTypes"
-          value: "push"
+        - github:
+          eventTypes: ["push"]
