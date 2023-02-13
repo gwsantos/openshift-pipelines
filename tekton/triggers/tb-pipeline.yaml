@@ -2,6 +2,8 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
   name: tb-pipeline
+  annotations:
+    triggers.tekton.dev/old-escape-quotes: "true"
   labels:
     app: java-app
     app.kubernetes.io/component: java-app
@@ -14,5 +16,3 @@ spec:
     value: $(body.head_commit.id)
   - name: git-repo-url
     value: $(body.repository.url)
-  - name: content-type
-    value: $(header.Content-Type)
