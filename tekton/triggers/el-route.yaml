@@ -3,10 +3,11 @@ kind: Route
 metadata:
   name: el-pipeline
   labels:
-    app.kubernetes.io/instance: java-pipeline-triggers
-    app.kubernetes.io/managed-by: EventListener
-    app.kubernetes.io/part-of: Triggers
-    eventlistener: el-pipeline  
+    app: java-app
+    #app.kubernetes.io/instance: java-pipeline-triggers
+    #app.kubernetes.io/managed-by: EventListener
+    #app.kubernetes.io/part-of: Triggers
+    #eventlistener: el-pipeline  
 spec:
   host: null
   port:
