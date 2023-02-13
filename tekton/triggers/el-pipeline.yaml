@@ -11,9 +11,17 @@ metadata:
 spec:
   serviceAccountName: pipeline
   triggers:
-    - bindings:
-        - kind: TriggerBinding
-          ref: tb-pipeline
-      name: push-trigger
+    - name: push-trigger
+      bindings:
+      - kind: TriggerBinding
+        ref: tb-pipeline
       template:
         ref: tt-pipeline
+      interceptors:
+        - ref:
+            name: "github"
+            kind: ClusterInterceptor
+            apiVersion: triggers.tekton.dev
+          params:
+          - name: "eventTypes"
+            value: ["push"]
