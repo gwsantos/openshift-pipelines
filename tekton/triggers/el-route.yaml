@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/part-of: Triggers
     eventlistener: el-pipeline  
 spec:
-  host: {}
+  host: null
   port:
     targetPort: http-listener
   to:
