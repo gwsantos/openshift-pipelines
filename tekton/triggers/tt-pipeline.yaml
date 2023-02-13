@@ -12,7 +12,6 @@ spec:
   params:
     - name: git-revision
     - name: git-repo-url
-    - name: content-type
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
@@ -34,10 +33,10 @@ spec:
           - default: java-app
             name: APP_NAME
             type: string
-          - default: 'https://github.com/gwsantos/openshift-quickstarts.git'
+          - value: $(tt.params.git-repo-url)
             name: GIT_REPO
             type: string
-          - default: master
+          - value: $(tt.params.git-revision)
             name: GIT_REVISION
             type: string
           - default: java-app
@@ -64,8 +63,6 @@ spec:
             type: string
         pipelineRef:
           name: java-pipeline
-        resources: []
-        status: null
         workspaces:
           - name: workspace
             persistentVolumeClaim:
