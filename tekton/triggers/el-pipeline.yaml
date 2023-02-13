@@ -4,24 +4,16 @@ metadata:
   name: el-pipeline
   labels:
     app: java-app
-    app.kubernetes.io/component: java-app
-    app.kubernetes.io/instance: java-app
-    app.kubernetes.io/name: java-app
-    app.kubernetes.io/part-of: Triggers
+    #app.kubernetes.io/component: java-app
+    #app.kubernetes.io/instance: java-app
+    #app.kubernetes.io/name: java-app
+    #app.kubernetes.io/part-of: Triggers
 spec:
   serviceAccountName: pipeline
   triggers:
     - name: push-trigger
       bindings:
-      - kind: TriggerBinding
-        ref: tb-pipeline
+      - kind: ClusterTriggerBinding
+        ref: github-push
       template:
         ref: tt-pipeline
-      interceptors:
-        - ref:
-            name: "github"
-            kind: ClusterInterceptor
-            apiVersion: triggers.tekton.dev
-          params:
-          - name: "eventTypes"
-            value: ["push"]
